@@ -1,0 +1,24 @@
+/* Partner offer, product value and programme terms in a single reading flow. */
+.p-hero{min-height:0;padding:145px 0 55px;text-align:left}
+.partner-hero-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:center}
+.p-hero .section-label{justify-content:flex-start}
+.p-hero h1{font-size:clamp(36px,4vw,54px);line-height:1.08;letter-spacing:-.045em}
+.partner-intro>p{font-size:17px;line-height:1.7;color:var(--muted);max-width:57ch}
+.p-hero .hero-btns{justify-content:flex-start;margin-top:25px;gap:12px}
+.p-hero .hero-btns a{padding:14px 20px;font-size:14px}
+.p-hero .hero-login{margin:20px 0 0;font-size:13px}
+.partner-offer{background:#ffd7c5;border:2px solid var(--black);border-radius:24px;padding:32px;box-shadow:7px 7px 0 var(--black)}
+.offer-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.offer-rate{display:block;font:700 90px/1.1 var(--font-head);letter-spacing:-.06em;margin:12px 0}
+.partner-offer>p{font-size:17px;line-height:1.5}.offer-example{border-top:2px solid var(--black);margin-top:24px;padding-top:18px}
+.offer-example>span{font-size:12px}.offer-example dl{margin:14px 0}.offer-example dl>div{display:flex;justify-content:space-between;gap:15px;margin:8px 0;font-size:13px}.offer-example dd{font-weight:700}.offer-example dl>div:last-child dd{font-size:23px}.offer-example small{display:block;font-size:11px;line-height:1.5}
+.partner-facts{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--black);padding-top:26px;gap:24px}
+.partner-facts strong,.partner-facts span{display:block}.partner-facts strong{font-size:15px}.partner-facts span{font-size:12px;color:var(--muted);margin-top:4px}
+.partner-value{background:white}.partner-lead{max-width:65ch;color:var(--muted);margin:20px 0 30px}
+.partner-benefits,.partner-terms-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.partner-benefits article{padding:26px;border:2px solid var(--black);border-radius:20px;background:var(--beige)}
+.partner-benefits article>span{font:700 14px var(--font-head);color:#b93600}.partner-benefits h3,.partner-terms h3{font-size:20px;margin:18px 0 12px}.partner-benefits p,.partner-terms p{font-size:14px;line-height:1.65;color:var(--muted)}
+.partner-text-link{display:inline-block;font-weight:600;margin-top:24px}
+.partner-support{background:#1a1a1a;color:#eae8de}.partner-support-grid{display:grid;grid-template-columns:1fr 1fr;gap:70px}.partner-support h2{color:#eae8de}.partner-support p{font-size:15px;line-height:1.7;color:#d0cec5;margin-top:20px}.partner-support .section-label{color:#ff9d70;border-color:#ff9d70}.partner-support-list article{border-bottom:1px solid #62625c;padding:0 0 22px;margin-bottom:24px}.partner-support-list h3{font-size:20px;color:#eae8de}.partner-support-list p{margin-top:8px}
+.partner-terms{background:#fff}.partner-terms-grid{margin-top:24px}.who-card{padding:24px}.who-card p{font-size:14px}.calc{scroll-margin-top:0}
+@media(max-width:800px){.partner-hero-grid,.partner-support-grid{grid-template-columns:1fr;gap:30px}.p-hero{padding:110px 0 40px}.p-hero h1{font-size:38px}.partner-offer{padding:24px}.offer-rate{font-size:72px}.partner-facts{grid-template-columns:1fr 1fr;gap:20px}.partner-benefits,.partner-terms-grid{grid-template-columns:1fr;gap:16px}.partner-benefits article{padding:22px}.partner-benefits h3{margin-top:12px}.partner-support-list article:last-child{margin-bottom:0}.partner-intro>p{font-size:16px}}

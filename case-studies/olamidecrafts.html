@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<!--
+  CASE STUDY — Olamide Craft (Fashion / Tailoring, Osun)
+  Live client since [TODO: REAL ONBOARDING DATE]
+
+  Content state: SCAFFOLD. Narrative spine + placeholder prose is drafted from
+  our knowledge of his business pattern (monograms, tailors, orders). Every
+  number marked [TODO: REAL] must be replaced from his live dashboard before
+  this page is published or indexed by Google.
+
+  Screenshots needed (drop into case-studies/images/):
+    olamidecrafts-hero.png     — cover: "before → after" split or full dashboard shot
+    olamidecrafts-problem.png  — paper ledger / notebook / WhatsApp chaos (stock ok)
+    olamidecrafts-solution.png — login screen or dashboard first-render moment
+    olamidecrafts-dashboard.png — Overview tab (full screenshot)
+    olamidecrafts-advanced.png — Monogram tab OR Financials tab with outstanding balances
+    olamidecrafts-mobile.png   — phone-in-hand with dashboard rendering (optional hero)
+
+  Before publishing:
+    1. Replace all [TODO: REAL] with actual values.
+    2. Pick ONE of the three candidate H1s; delete the other two.
+    3. Remove this comment block.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8"/beehi-analytics-review/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/beehi-analytics-review/>
+<title>Olamide Craft: how a fashion studio in Osun finally measured its own business — Case Study | BeeHi Analytics</title>
+<meta content="How Olamide Craft moved from handwritten ledgers to a real-time dashboard — and what that meant for outstanding payments, monogram tracking, and Friday-night bookkeeping." name="description"/beehi-analytics-review/>
+<meta content="Behind The Data Ltd." name="author"/beehi-analytics-review/>
+<meta content="index, follow, max-image-preview:large" name="robots"/beehi-analytics-review/>
+<link href="https://bianalytics.africa/case-studies/olamidecrafts" rel="canonical"/beehi-analytics-review/>
+<meta content="article" property="og:type"/beehi-analytics-review/>
+<meta content="https://bianalytics.africa/case-studies/olamidecrafts" property="og:url"/beehi-analytics-review/>
+<meta content="Olamide Craft: how a fashion studio in Osun finally measured its own business — Case Study | BeeHi Analytics" property="og:title"/beehi-analytics-review/>
+<meta content="How one Osun fashion studio moved from handwritten ledgers to a real-time dashboard — and what it meant for outstanding payments and Friday-night bookkeeping." property="og:description"/beehi-analytics-review/>
+<meta content="https://bianalytics.africa/assets/beehi-social-card.png" property="og:image"/beehi-analytics-review/>
+<meta content="en_NG" property="og:locale"/beehi-analytics-review/>
+<meta content="BeeHi Analytics" property="og:site_name"/beehi-analytics-review/>
+<meta content="summary_large_image" name="twitter:card"/beehi-analytics-review/>
+<meta content="https://bianalytics.africa/assets/beehi-social-card.png" name="twitter:image"/beehi-analytics-review/>
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "From Paper Records to Daily Business Intelligence",
+    "description": "How one Osun fashion studio moved from handwritten ledgers to a real-time dashboard and what it meant for outstanding payments and Friday-night bookkeeping.",
+    "image": "https://bianalytics.africa/case-studies/images/olamidecrafts-hero.png",
+    "datePublished": "2026-05-12",
+    "author": { "@type": "Person", "name": "Ayoade Adegbite", "url": "https://bianalytics.africa/about" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "BeeHi Analytics",
+      "logo": { "@type": "ImageObject", "url": "https://bianalytics.africa/assets/beehi-mark.svg" }
+    },
+    "mainEntityOfPage": "https://bianalytics.africa/case-studies/olamidecrafts"
+  }
+  </script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/beehi-analytics-review/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/beehi-analytics-review/>
+<!--
+    All styling lives in _template.html as the canonical reference. When duplicating
+    that file into a new case-study page, copy the entire <style> block verbatim —
+    do not diverge per page. Only the content between sections should differ.
+  -->
+<link href="/beehi-analytics-review/assets/pages/case-studies-olamidecrafts.css" rel="stylesheet"/beehi-analytics-review/><link href="/beehi-analytics-review/assets/public-layout.css?v=0d65a1322067" rel="stylesheet"/beehi-analytics-review/>
+<script defer="" src="/beehi-analytics-review/assets/public-layout.js?v=20261027-current"></script>
+<link href="/beehi-analytics-review/assets/beehi-theme.css?v=20261027-current" rel="stylesheet"/beehi-analytics-review/><link href="/beehi-analytics-review/assets/beehi-mark.svg" rel="icon" type="image/svg+xml"/beehi-analytics-review/><meta name="twitter:site" content="@BeeHiAnalytics"/beehi-analytics-review/><meta property="og:image:alt" content="BeeHi Analytics — Analytics-as-a-Service for SMEs"/beehi-analytics-review/><meta name="twitter:title" content="Olamide Craft: how a fashion studio in Osun finally measured its own business — Case Study | BeeHi Analytics"/beehi-analytics-review/><meta name="twitter:description" content="How Olamide Craft moved from handwritten ledgers to a real-time dashboard — and what that meant for outstanding payments, monogram tracking, and Friday-night bookkeeping."/beehi-analytics-review/><meta property="og:image:width" content="1200"/beehi-analytics-review/><meta property="og:image:height" content="630"/beehi-analytics-review/><meta name="robots" content="noindex, nofollow">
+</head>
+<body data-page="case-studies-olamidecrafts">
+<!-- shared:public-nav:start -->
+<nav aria-label="Main navigation" class="site-nav" id="nav">
+<div class="container">
+<a class="nav-logo" href="/beehi-analytics-review/">
+<svg aria-hidden="true" fill="none" height="38" viewbox="0 0 40 40" width="38" xmlns="http://www.w3.org/2000/svg"><rect fill="#ff4f00" height="37.5" rx="18.75" stroke="#1a1a1a" stroke-width="2.5" width="37.5" x="1.25" y="1.25"></rect><path d="M12 26V19M20 26V13M28 26V22" stroke="#1a1a1a" stroke-linecap="round" stroke-width="3"></path></svg>
+<div class="nav-logo-text"><span class="nav-logo-name">BeeHi<span>.</span>Analytics</span><div class="nav-logo-tagline">From Behind The Data</div></div>
+</a>
+<div class="nav-links" id="site-nav-links">
+<a href="/beehi-analytics-review/">Home</a>
+<a href="/beehi-analytics-review/about.html">About</a>
+<a href="/beehi-analytics-review/case-studies.html">Case Studies</a>
+<a href="/beehi-analytics-review/blog.html">Blog</a>
+<a href="/beehi-analytics-review/#pricing">Pricing</a>
+<details class="nav-dropdown">
+<summary>Refer</summary>
+<div class="nav-dropdown-menu">
+<a href="/beehi-analytics-review/partners.html">Partner Programme</a>
+<a href="https://bianalytics.africa/partner-portal">Partner Login</a>
+</div>
+</details>
+<button class="nav-signin" data-client-signin="" type="button">Sign In</button>
+<a class="nav-cta" href="/beehi-analytics-review/signup.html">Get Started</a>
+</div>
+<button aria-controls="site-nav-links" aria-expanded="false" aria-label="Toggle menu" class="menu-toggle" id="site-menu-toggle">
+<svg fill="none" height="24" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+</button>
+</div>
+</nav>
+<!-- shared:public-nav:end -->
+<section class="case-hero">
+<div class="container">
+<div class="case-label">Case Study · Fashion &amp; Tailoring · Oshogbo, Osun</div>
+<h1>From Paper Records to <span class="metric">a Clearer View of the Business</span></h1>
+<div class="case-byline">
+<span>By <strong>Ayoade Adegbite</strong></span>
+<span class="separator">·</span>
+<span>May 11, 2026</span>
+<span class="separator">·</span>
+<span>4 min read</span>
+</div>
+</div>
+</section>
+<article class="case-body">
+<div class="container">
+<!-- ── 01. The Problem ─────────────────────────────────────────── -->
+<section class="case-section">
+<h2>The Problem</h2>
+<p>At Olamide Craft in Oshogbo, Osun State, Olamide kept his fashion business’s records in notebooks. Every order. Every payment. Every measurement. Pen on paper. At the end of each year, he'd close the book and start a new one, and the old book would go straight into the drawer. The records were written, but never read.</p>
+<p>Which meant the business was running on memory and guesswork. The questions that actually decide a small studio's direction had no answer:</p>
+<ul>
+<li>How much did I make this month? This year?</li>
+<li>Can I afford to bring on a part-time tailor? A full-time one?</li>
+<li>When is my busiest week? My slowest stretch?</li>
+</ul>
+<p>He was working hard. He just couldn't see his own work.</p>
+</section>
+<!-- ── 02. The Solution ────────────────────────────────────────── -->
+<section class="case-section">
+<h2>The Solution</h2>
+<p>He heard about BeeHi Analytics through someone else in Osun. Over <strong>two weeks of working sessions</strong> with our team, the notebook entries were translated into a structured Google Sheet, and that sheet was wired to a custom-built dashboard.</p>
+<p>Now every order, every payment, every customer lives in one place. The dashboard refreshes automatically every morning at 8 AM — before he's opened the shop, the numbers are waiting for him.</p>
+</section>
+<!-- ── Before / After visual bridge ────────────────────────────── -->
+<div class="case-comparison">
+<figure class="case-snapshot is-before">
+<div class="case-snapshot-frame">
+<img alt="Olamide's old handwritten notebook with order records" src="images/olamidecrafts-before.jpg"/beehi-analytics-review/>
+</div>
+<figcaption>Before — pen, paper, end-of-year bin</figcaption>
+</figure>
+<figure class="case-snapshot">
+<div aria-label="Mock-up of Olamide Crafts orders log in Google Sheets" class="case-snapshot-frame is-gsheet">
+<div class="gsheet">
+<div class="gsheet-titlebar">
+<span aria-hidden="true" class="gsheet-titlebar-icon"></span>
+<span class="gsheet-title">Olamide Crafts — Orders Log</span>
+</div>
+<div class="gsheet-formula"><strong>A2</strong> 02-May-2026</div>
+<table aria-hidden="true" class="gsheet-grid">
+<colgroup>
+<col style="width:22px"/beehi-analytics-review/>
+<col style="width:14%"/beehi-analytics-review/><col style="width:22%"/beehi-analytics-review/><col style="width:18%"/beehi-analytics-review/><col style="width:16%"/beehi-analytics-review/><col style="width:16%"/beehi-analytics-review/><col style="width:14%"/beehi-analytics-review/>
+</colgroup>
+<thead>
+<tr class="gsheet-cols">
+<th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
+</tr>
+<tr class="gsheet-header">
+<td class="gsheet-rownum">1</td>
+<td>Date</td><td>Customer</td><td>Item</td><td>Price</td><td>Advance</td><td>Balance</td>
+</tr>
+</thead>
+<tbody>
+<tr><td class="gsheet-rownum">2</td><td>02-May</td><td>Adunni Bello</td><td>Agbada Set</td><td class="gsheet-num">₦50,000</td><td class="gsheet-num">₦30,000</td><td class="gsheet-num gsheet-pending">₦20,000</td></tr>
+<tr><td class="gsheet-rownum">3</td><td>01-May</td><td>Tope Adeyemi</td><td>Cap &amp; Top</td><td class="gsheet-num">₦18,000</td><td class="gsheet-num">₦18,000</td><td class="gsheet-num gsheet-paid">₦0</td></tr>
+<tr><td class="gsheet-rownum">4</td><td>30-Apr</td><td>Folake Olatunji</td><td>Iro &amp; Buba</td><td class="gsheet-num">₦35,000</td><td class="gsheet-num">₦15,000</td><td class="gsheet-num gsheet-pending">₦20,000</td></tr>
+<tr><td class="gsheet-rownum">5</td><td>29-Apr</td><td>Yemi Aderonmu</td><td>Buba Combo</td><td class="gsheet-num">₦22,000</td><td class="gsheet-num">₦22,000</td><td class="gsheet-num gsheet-paid">₦0</td></tr>
+<tr><td class="gsheet-rownum">6</td><td>28-Apr</td><td>Bisi Adekunle</td><td>Agbada Set</td><td class="gsheet-num">₦55,000</td><td class="gsheet-num">₦25,000</td><td class="gsheet-num gsheet-pending">₦30,000</td></tr>
+<tr><td class="gsheet-rownum">7</td><td>27-Apr</td><td>Kunle Bakare</td><td>Cap &amp; Top</td><td class="gsheet-num">₦15,000</td><td class="gsheet-num">₦15,000</td><td class="gsheet-num gsheet-paid">₦0</td></tr>
+</tbody>
+</table>
+<div class="gsheet-tabbar">
+<span class="gsheet-tab is-active">2026 Sales</span>
+<span class="gsheet-tab">2026 Cashbook</span>
+</div>
+</div>
+</div>
+<figcaption>After — every order, one source of truth</figcaption>
+</figure>
+</div>
+<!-- ── 03. The Insight ─────────────────────────────────────────── -->
+<section class="case-section">
+<h2>The Insight</h2>
+<p>Today, Olamide checks his dashboard before he steps into the studio. In one screen he sees:</p>
+<ul class="insight-bullets">
+<li>
+<strong>Which styles people are ordering most</strong>
+          The cap-and-top combos move at much higher volume than full agbada sets, so he keeps that fabric in deeper stock and quotes turnaround times he can actually hit.
+        </li>
+<li>
+<strong>What's still owed to him</strong>
+          Pending balances from incomplete jobs are listed by customer, sorted by how long they've been sitting there. He messages those customers on WhatsApp directly from the list.
+        </li>
+<li>
+<strong>Per-order profit</strong>
+          A ₦30,000 advance on an outfit that cost him ₦15,000 in materials is ₦15,000 in his pocket. Now he can see it for every order, not just the ones he remembers.
+        </li>
+</ul>
+<div class="case-pullquote">
+<p>Same hard work. Different visibility. Different decisions.</p>
+</div>
+</section>
+</div>
+</article>
+<section class="case-cta">
+<div class="container">
+<h2>Want this for your business?</h2>
+<p>We provide Analytics-as-a-Service to help SMEs understand performance and make informed decisions. Plans start at ₦7,500/month, with a six-month minimum on Starter and a one-time setup fee.</p>
+<a class="cta-btn" href="/beehi-analytics-review/signup.html">Get Started</a>
+<a class="cta-secondary" href="https://wa.me/2347064257792" rel="noopener" target="_blank">or ask us on WhatsApp →</a>
+</div>
+</section>
+<section class="more-cases">
+<div class="container">
+<h2>More case studies</h2>
+<div class="more-grid">
+<a class="more-card" href="/beehi-analytics-review/case-studies/styledbylulu.html">
+<div class="more-industry">Beauty · Ibadan</div>
+<div class="more-title">How Styledbylulu Finally Understood Her Profit</div>
+</a>
+<a class="more-card" href="/beehi-analytics-review/case-studies.html">
+<div class="more-industry">All industries</div>
+<div class="more-title">See every client story →</div>
+</a>
+<a class="more-card" href="/beehi-analytics-review/signup.html">
+<div class="more-industry">Get your own</div>
+<div class="more-title">Explore analytics for your business →</div>
+</a>
+</div>
+</div>
+</section>
+<!-- shared:public-footer:start -->
+<footer class="site-footer">
+<div class="container">
+<div class="footer-grid">
+<div>
+<div class="footer-brand">
+<svg aria-hidden="true" fill="none" height="38" viewbox="0 0 40 40" width="38" xmlns="http://www.w3.org/2000/svg"><rect fill="#ff4f00" height="37.5" rx="18.75" stroke="#1a1a1a" stroke-width="2.5" width="37.5" x="1.25" y="1.25"></rect><path d="M12 26V19M20 26V13M28 26V22" stroke="#1a1a1a" stroke-linecap="round" stroke-width="3"></path></svg>
+<div class="nav-logo-text"><span class="nav-logo-name">BeeHi<span>.</span>Analytics</span><div class="nav-logo-tagline">From Behind The Data</div></div>
+</div>
+<p>Analytics-as-a-Service for SMEs. Turn your business data into actionable insights, without building an internal analytics team.</p>
+<p style="font-size:12px;color:var(--muted);margin-top:8px;opacity:0.7">A product of Behind The Data Ltd.</p>
+</div>
+<div>
+<div class="footer-heading">Product</div>
+<ul class="footer-links">
+<li><a href="/beehi-analytics-review/#industries">Who It’s For</a></li>
+<li><a href="/beehi-analytics-review/#pricing">Pricing</a></li>
+<li><a href="/beehi-analytics-review/#preview">Demo</a></li>
+<li><a href="/beehi-analytics-review/#faq">FAQ</a></li>
+</ul>
+</div>
+<div>
+<div class="footer-heading">Industries</div>
+<ul class="footer-links">
+<li><a href="/beehi-analytics-review/samples/fitzone.html">Gyms &amp; Fitness</a></li>
+<li><a href="/beehi-analytics-review/samples/glowaura.html">Salons &amp; Beauty</a></li>
+<li><a href="/beehi-analytics-review/samples/freshpress.html">Laundry</a></li>
+<li><a href="/beehi-analytics-review/samples/mobilemechanics.html">Repairs</a></li>
+</ul>
+</div>
+<div>
+<div class="footer-heading">Company</div>
+<ul class="footer-links">
+<li><a href="/beehi-analytics-review/about.html">About Us</a></li>
+<li><a href="/beehi-analytics-review/case-studies.html">Case Studies</a></li>
+<li><a href="/beehi-analytics-review/blog.html">Blog</a></li>
+<li><a href="/beehi-analytics-review/partners.html">Partner Programme</a></li>
+</ul>
+</div>
+<div>
+<div class="footer-heading">Contact</div>
+<ul class="footer-links"><li><a href="/beehi-analytics-review/contact.html">Contact Us</a></li><li><a href="https://wa.me/2347064257792">WhatsApp</a></li><li><a href="mailto:hello@bianalytics.africa">Email us</a></li><li><a href="https://www.instagram.com/beehianalyticshq/">Instagram</a></li></ul>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 BeeHi Analytics. All rights reserved.</span>
+<div class="footer-social"><a aria-label="X / Twitter" href="https://x.com/BeeHiAnalytics" title="X / Twitter">
+<svg fill="currentColor" height="18" viewbox="0 0 24 24" width="18"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</a><a aria-label="Instagram" href="https://www.instagram.com/beehianalyticshq/" rel="noopener noreferrer" target="_blank" title="Instagram">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><rect height="20" rx="5" width="20" x="2" y="2"></rect><circle cx="12" cy="12" r="5"></circle><circle cx="17.5" cy="6.5" fill="currentColor" r="1.5" stroke="none"></circle></svg>
+</a><a aria-label="LinkedIn" href="https://www.linkedin.com/company/beehi-analytics-hq/about/" title="LinkedIn">
+<svg fill="currentColor" height="18" viewbox="0 0 24 24" width="18"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM6.886 20.452H3.79V9h3.096v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path></svg>
+</a><a aria-label="WhatsApp" href="https://wa.me/2347064257792" title="WhatsApp"><svg fill="none" height="20" stroke="currentColor" stroke-width="1.7" viewbox="0 0 24 24" width="20"><path d="M20.5 11.7a8.5 8.5 0 0 1-12.6 7.5L3 21l1.7-5a8.5 8.5 0 1 1 15.8-4.3Z"></path><path d="M8 7c-2 2 3 8 6 9l2-2-3-2-1 1-2-2 1-1-2-3Z"></path></svg></a><a aria-label="TikTok" href="#" title="TikTok"><svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M14 3v12a4 4 0 1 1-4-4M14 3c1 4 3 5 6 5"></path></svg></a></div>
+</div>
+</div>
+</footer>
+<!-- shared:public-footer:end -->
+<!-- shared:client-signin:start -->
+<dialog aria-labelledby="client-signin-title" class="client-signin" id="client-signin">
+<button aria-label="Close sign in" class="client-signin-close" type="button">×</button>
+<h2 id="client-signin-title">Sign in to your dashboard</h2>
+<p>Enter your business’s dashboard name to go to its secure sign-in page.</p>
+<form id="client-signin-form">
+<label for="client-dashboard-name">Your dashboard name</label>
+<div class="client-signin-address"><input autocapitalize="none" autocomplete="off" id="client-dashboard-name" maxlength="63" name="subdomain" pattern="[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*" placeholder="yourbusiness" required="" spellcheck="false"/beehi-analytics-review/><span>.bianalytics.africa</span></div>
+<p class="client-signin-hint">Use the name from your dashboard link, without https:// or .bianalytics.africa.</p>
+<button class="client-signin-submit" type="submit">Continue to sign in →</button>
+</form>
+<p class="client-signin-help">Forgot your dashboard name? <a href="https://wa.me/2347064257792">Ask us on WhatsApp</a></p>
+<p class="client-signin-help">Looking for partner access? <a href="https://bianalytics.africa/partner-portal">Partner Login</a></p>
+</dialog>
+<!-- shared:client-signin:end -->
+</body>
+</html>

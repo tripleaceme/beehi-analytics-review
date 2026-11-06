@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" href="/beehi-analytics-review/favicon.ico?v=3828d98af211" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/beehi-analytics-review/logo/favicon-32.png?v=4aa3d858a87f" />
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/beehi-analytics-review/logo/favicon.svg?v=381987b5a167" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MobileMechanics NG — Workshop Performance Tracker</title>
+  <meta name="description" content="Workshop analytics dashboard for MobileMechanics NG, powered by BI Analytics Africa." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0f1e; --bg2: #0f172a; --surface: #1e293b; --surface2: #263348;
+      --border: #334155; --text: #f1f5f9; --muted: #94a3b8;
+      --gold: #d4a053; --gold-bright: #e8b866; --gold-dim: rgba(212,160,83,.10);
+      --green: #10b981; --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444; --purple: #8b5cf6;
+      --font-head: 'Fira Code', monospace; --font-body: 'Fira Sans', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar { width: 240px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--border); padding: 0 0 20px 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-brand { padding: 0 20px; min-height: 72px; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    .sidebar-brand-name { font-family: var(--font-head); font-size: 17px; font-weight: 700; color: var(--gold); }
+    .sidebar-brand-tagline { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: .5px; text-transform: uppercase; }
+    .sidebar-section { padding: 16px 20px 6px; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; color: var(--muted); cursor: pointer; border-left: 2px solid transparent; transition: all .15s; user-select: none; }
+    .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+    .sidebar-item.active { background: var(--gold-dim); color: var(--gold); border-left-color: var(--gold); }
+    .sidebar-item svg { flex-shrink: 0; opacity: .8; }
+    .sidebar-spacer { flex: 1; }
+
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-x: hidden; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 28px; min-height: 72px; border-bottom: 1px solid var(--border); background: rgba(15,23,42,.7); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--text); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .badge { font-size: 11px; color: var(--green); background: rgba(16,185,129,.1); padding: 4px 10px; border-radius: 12px; font-weight: 500; }
+    .date-filter { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: var(--font-body); cursor: pointer; }
+
+    .content { padding: 24px 28px; }
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+
+    .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 500; }
+    .kpi-value { font-family: var(--font-head); font-size: 26px; font-weight: 700; margin: 6px 0 2px; color: var(--text); }
+    .kpi-value.gold { color: var(--gold); }
+    .kpi-value.green { color: var(--green); }
+    .kpi-value.amber { color: var(--amber); }
+    .kpi-value.red { color: var(--red); }
+    .kpi-delta { font-size: 11px; color: var(--muted); }
+
+    .section-heading { font-family: var(--font-head); font-size: 13px; font-weight: 600; color: var(--gold); margin: 20px 0 10px; letter-spacing: .04em; }
+    .chart-row { display: grid; gap: 14px; margin-bottom: 16px; }
+    .chart-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .chart-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; min-width: 0; overflow: hidden; }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .chart-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .chart-wrap { position: relative; height: 220px; max-width: 100%; overflow: hidden; }
+    .chart-source { font-size: 10px; color: var(--muted); margin-top: 8px; font-family: var(--font-head); }
+    .chart-source code { background: var(--surface2); padding: 1px 4px; border-radius: 3px; font-size: 10px; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .data-table th { text-align: left; padding: 10px 12px; background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .data-table tr:hover td { background: rgba(212,160,83,.04); }
+
+    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .status-badge.completed { background: rgba(16,185,129,.15); color: var(--green); }
+    .status-badge.inprogress { background: rgba(59,130,246,.15); color: var(--blue); }
+    .status-badge.awaitingparts { background: rgba(245,158,11,.15); color: var(--amber); }
+    .status-badge.delivered { background: rgba(212,160,83,.15); color: var(--gold); }
+    .status-badge.late { background: rgba(239,68,68,.15); color: var(--red); }
+    .status-badge.ontime { background: rgba(16,185,129,.15); color: var(--green); }
+    .status-badge.lowstock { background: rgba(239,68,68,.15); color: var(--red); }
+    .status-badge.instock { background: rgba(16,185,129,.15); color: var(--green); }
+
+        /* ── Mobile-only elements (hidden on desktop) ── */
+    .mobile-topbar { display: none; }
+    .mobile-bottom-nav { display: none; }
+    .mobile-drawer-backdrop { display: none; }
+    .mobile-drawer { display: none; }
+    .mobile-filter-bar { display: none; }
+
+    @media (max-width: 1024px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .chart-row.cols-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      /* Hide desktop elements */
+      .sidebar { display: none; }
+      .topbar { display: none; }
+
+      /* ── Mobile topbar (hamburger + title + badge + logout) ── */
+      .mobile-topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: 0; z-index: 30;
+      }
+      .mobile-topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .mobile-hamburger {
+        background: none; border: none; color: var(--text);
+        padding: 4px; cursor: pointer; display: flex; flex-shrink: 0;
+      }
+      .mobile-topbar-title {
+        font-family: var(--font-head); font-size: 14px; font-weight: 600;
+        color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .mobile-topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+      .mobile-badge {
+        background: var(--gold-dim); color: var(--gold);
+        border: 1px solid rgba(212,160,83,.3);
+        border-radius: 12px; padding: 2px 8px;
+        font-size: 9px; font-weight: 600;
+        white-space: nowrap;
+      }
+      .mobile-logout-btn {
+        background: var(--surface2); border: 1px solid var(--border);
+        color: var(--muted); border-radius: 6px;
+        padding: 6px 10px; font-size: 10px; text-decoration: none;
+        display: flex; align-items: center; gap: 4px;
+      }
+
+      /* ── Mobile filter bar (below topbar) ── */
+      .mobile-filter-bar {
+        display: flex; gap: 8px;
+        padding: 10px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: 57px; z-index: 25;
+      }
+      .mobile-filter-bar select {
+        flex: 1; background: var(--surface2); border: 1px solid var(--border);
+        color: var(--text); border-radius: 6px; padding: 6px 10px;
+        font-family: var(--font-body); font-size: 12px;
+      }
+
+      /* ── Mobile bottom tab bar ── */
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding: 8px 4px; padding-bottom: calc(8px + env(safe-area-inset-bottom));
+        z-index: 30;
+        box-shadow: 0 -4px 20px rgba(0,0,0,.3);
+      }
+      .mobile-nav-item {
+        flex: 1; min-width: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 4px; padding: 6px 2px;
+        background: none; border: none;
+        color: var(--muted); cursor: pointer;
+        font-family: var(--font-body); font-size: 9px;
+        transition: color .15s;
+        overflow: hidden; white-space: nowrap;
+      }
+      .mobile-nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+      .mobile-nav-item.active { color: var(--gold); }
+
+      /* ── Mobile drawer (slide-out side panel) ── */
+      .mobile-drawer-backdrop {
+        display: block;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,.6);
+        opacity: 0; pointer-events: none;
+        transition: opacity .3s;
+        z-index: 40;
+      }
+      .mobile-drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+      .mobile-drawer {
+        display: flex; flex-direction: column;
+        position: fixed; top: 0; left: 0; bottom: 0;
+        width: 80%; max-width: 300px;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform .3s ease;
+        overflow-y: auto;
+      }
+      .mobile-drawer.open { transform: translateX(0); }
+      .mobile-drawer-header {
+        padding: 20px; border-bottom: 1px solid var(--border);
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .mobile-drawer-brand {
+        font-family: var(--font-head); font-size: 15px; font-weight: 700;
+        color: var(--gold);
+      }
+      .mobile-drawer-brand span { display: block; font-size: 10px; color: var(--muted); font-weight: 400; margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+      .mobile-drawer-close {
+        background: none; border: none; color: var(--muted); cursor: pointer;
+      }
+      .mobile-drawer-section {
+        padding: 12px 20px 6px;
+        font-size: 10px; font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase; letter-spacing: .08em;
+      }
+      .mobile-drawer-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 20px;
+        color: var(--muted); text-decoration: none;
+        font-size: 14px; font-weight: 500;
+        border: none; background: none; width: 100%; text-align: left;
+        font-family: var(--font-body); cursor: pointer;
+      }
+      .mobile-drawer-item:hover { background: var(--surface2); color: var(--text); }
+      .mobile-drawer-item svg { flex-shrink: 0; }
+
+      /* ── Content adjustments ── */
+      .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .kpi-card { padding: 14px; }
+      .kpi-value { font-size: 20px; }
+      .kpi-label { font-size: 10px; }
+      .kpi-delta { font-size: 10px; }
+      .chart-row.cols-2, .chart-row.cols-3 { grid-template-columns: 1fr; }
+      .content { padding: 16px 12px 100px 12px; }
+      .section-heading { font-size: 10px; }
+      .chart-card { padding: 14px; }
+      .chart-title { font-size: 12px; }
+      .data-table { font-size: 11px; }
+      .data-table th, .data-table td { padding: 8px; }
+    }
+  </style>
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Mobile Drawer Backdrop ── -->
+  <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="toggleDrawer()"></div>
+
+  <!-- ── Mobile Drawer (slide-out side panel) ── -->
+  <aside class="mobile-drawer" id="mobile-drawer">
+    <div class="mobile-drawer-header">
+      <div class="mobile-drawer-brand">
+        MobileMechanics NG
+        <span>Workshop Performance Tracker</span>
+      </div>
+      <button class="mobile-drawer-close" onclick="toggleDrawer()" aria-label="Close menu">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/beehi-analytics-review/><line x1="6" y1="6" x2="18" y2="18"/beehi-analytics-review/></svg>
+      </button>
+    </div>
+
+    <div class="mobile-drawer-section">Dashboards</div>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('overview');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>
+      Overview
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('orders');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/beehi-analytics-review/><polyline points="14 2 14 8 20 8"/beehi-analytics-review/></svg>
+      Work Orders
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('parts');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/beehi-analytics-review/></svg>
+      Parts
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('financials');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>
+      Financials
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('mechanics');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/beehi-analytics-review/></svg>
+      Mechanics
+    </a>
+
+    <div style="flex:1"></div>
+
+    <a class="mobile-drawer-item" href="/beehi-analytics-review/samples.html" style="border-top:1px solid var(--border);color:var(--red)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/beehi-analytics-review/><polyline points="16 17 21 12 16 7"/beehi-analytics-review/><line x1="21" y1="12" x2="9" y2="12"/beehi-analytics-review/></svg>
+      Logout
+    </a>
+  </aside>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-name">MobileMechanics NG</div>
+      <div class="sidebar-brand-tagline">Workshop Performance Tracker</div>
+    </div>
+
+    <div class="sidebar-section">Dashboards</div>
+    <div class="sidebar-item active" onclick="switchTab('overview')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>
+      Overview
+    </div>
+    <div class="sidebar-item" onclick="switchTab('orders')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/beehi-analytics-review/><polyline points="14 2 14 8 20 8"/beehi-analytics-review/></svg>
+      Work Orders
+    </div>
+    <div class="sidebar-item" onclick="switchTab('parts')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/beehi-analytics-review/></svg>
+      Parts
+    </div>
+    <div class="sidebar-item" onclick="switchTab('financials')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>
+      Financials
+    </div>
+    <div class="sidebar-item" onclick="switchTab('mechanics')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/beehi-analytics-review/></svg>
+      Mechanics
+    </div>
+
+    <div class="sidebar-spacer"></div>
+    <a class="sidebar-item" href="/beehi-analytics-review/samples.html" style="text-decoration:none;border-top:1px solid var(--border);padding-top:12px;color:var(--red)">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/beehi-analytics-review/><polyline points="16 17 21 12 16 7"/beehi-analytics-review/><line x1="21" y1="12" x2="9" y2="12"/beehi-analytics-review/></svg>
+      Logout
+    </a>
+  </aside>
+
+  <div class="main">
+    
+
+    <!-- ── Mobile Topbar (visible only on mobile) ── -->
+    <header class="mobile-topbar">
+      <div class="mobile-topbar-left">
+        <button class="mobile-hamburger" onclick="toggleDrawer()" aria-label="Open menu">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/beehi-analytics-review/><line x1="3" y1="6" x2="21" y2="6"/beehi-analytics-review/><line x1="3" y1="18" x2="21" y2="18"/beehi-analytics-review/></svg>
+        </button>
+        <div class="mobile-topbar-title" id="mobile-topbar-title">Overview</div>
+      </div>
+      <div class="mobile-topbar-right">
+        <span class="mobile-badge">Live &middot; Demo</span>
+        <a class="mobile-logout-btn" href="/beehi-analytics-review/samples.html" aria-label="Logout">Logout</a>
+      </div>
+    </header>
+
+    <!-- ── Mobile Filter Bar ── -->
+    <div class="mobile-filter-bar">
+      <select id="mobile-year-filter" aria-label="Year">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+      </select>
+      <select id="mobile-month-filter" aria-label="Month">
+        <option value="all">All months</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4" selected>April</option>
+      </select>
+    </div>
+
+    <!-- Desktop Topbar -->
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Overview</div>
+      <div class="topbar-right">
+        <span class="badge">Synced: Apr 11, 2026 · 9:15 AM</span>
+        <select class="date-filter" id="year-filter" aria-label="Year filter">
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+        </select>
+        <select class="date-filter" id="month-filter">
+          <option value="all">All months</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4" selected>April</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="dashboard active" id="dashboard-overview"></div>
+      <div class="dashboard" id="dashboard-orders"></div>
+      <div class="dashboard" id="dashboard-parts"></div>
+      <div class="dashboard" id="dashboard-financials"></div>
+      <div class="dashboard" id="dashboard-mechanics"></div>
+    </div>
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav">
+  <button class="mobile-nav-item active" data-tab="overview" onclick="switchTab('overview')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>Overview
+  </button>
+  <button class="mobile-nav-item" data-tab="orders" onclick="switchTab('orders')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/beehi-analytics-review/></svg>Orders
+  </button>
+  <button class="mobile-nav-item" data-tab="parts" onclick="switchTab('parts')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/beehi-analytics-review/></svg>Parts
+  </button>
+  <button class="mobile-nav-item" data-tab="mechanics" onclick="switchTab('mechanics')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/beehi-analytics-review/></svg>Team
+  </button>
+  <button class="mobile-nav-item" data-tab="financials" onclick="switchTab('financials')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>Revenue
+  </button>
+
+</nav>
+
+<script>
+const DATA = {
+  kpis: {
+    jobsCompleted: 85,
+    monthlyRevenue: 2100000,
+    avgTicket: 28000,
+    partsMargin: 32,
+    onTimeRate: 88
+  },
+  monthly: [
+    { month: 1, label: 'Jan', revenue: 1240000, jobs: 16, onTime: 14, parts: 420000, labor: 820000 },
+    { month: 2, label: 'Feb', revenue: 1520000, jobs: 20, onTime: 17, parts: 510000, labor: 1010000 },
+    { month: 3, label: 'Mar', revenue: 1840000, jobs: 24, onTime: 22, parts: 620000, labor: 1220000 },
+    { month: 4, label: 'Apr', revenue: 2100000, jobs: 25, onTime: 22, parts: 710000, labor: 1390000 }
+  ],
+  serviceTypes: [
+    { name: 'Oil Change',          price: 12000, jobs: 22, color: '#3b82f6' },
+    { name: 'Brake Job',           price: 25000, jobs: 14, color: '#8b5cf6' },
+    { name: 'Full Service',        price: 45000, jobs: 12, color: '#d4a053' },
+    { name: 'AC Repair',           price: 35000, jobs: 9,  color: '#10b981' },
+    { name: 'Engine Diagnostics',  price: 15000, jobs: 11, color: '#f59e0b' },
+    { name: 'Battery Replacement', price: 40000, jobs: 8,  color: '#ef4444' },
+    { name: 'Tire Change',         price: 8000,  jobs: 6,  color: '#e8b866' },
+    { name: 'Clutch Repair',       price: 80000, jobs: 3,  color: '#64748b' }
+  ],
+  mechanics: [
+    { id: 'M01', name: 'Kazeem Lawal',     specialty: 'Engine, Diagnostics', rating: 4.8, jobs: 19, onTimeRate: 94, avgTurnaround: 5.2 },
+    { id: 'M02', name: 'Dayo Afolabi',     specialty: 'Brakes, Suspension',  rating: 4.7, jobs: 17, onTimeRate: 91, avgTurnaround: 5.8 },
+    { id: 'M03', name: 'Chinedu Obi',      specialty: 'AC, Electrical',      rating: 4.6, jobs: 15, onTimeRate: 85, avgTurnaround: 6.5 },
+    { id: 'M04', name: 'Ibrahim Suleiman', specialty: 'Transmission',        rating: 4.7, jobs: 13, onTimeRate: 87, avgTurnaround: 7.1 },
+    { id: 'M05', name: 'Emeka Uzor',       specialty: 'Tires, Alignment',    rating: 4.9, jobs: 12, onTimeRate: 96, avgTurnaround: 3.8 },
+    { id: 'M06', name: 'Gbenga Adebiyi',   specialty: 'Oil, General',        rating: 4.5, jobs: 9,  onTimeRate: 82, avgTurnaround: 4.5 }
+  ],
+  recentOrders: [
+    { id: 'WO-0285', vehicle: 'Toyota Camry 2018',   service: 'Brake Job',          mechanic: 'Dayo Afolabi',     parts: 14000, labor: 11000, total: 25000, status: 'completed' },
+    { id: 'WO-0284', vehicle: 'Honda Accord 2016',   service: 'Oil Change',         mechanic: 'Gbenga Adebiyi',   parts: 4500,  labor: 7500,  total: 12000, status: 'completed' },
+    { id: 'WO-0283', vehicle: 'Lexus RX350 2019',    service: 'AC Repair',          mechanic: 'Chinedu Obi',      parts: 18000, labor: 17000, total: 35000, status: 'inprogress' },
+    { id: 'WO-0282', vehicle: 'Kia Rio 2015',        service: 'Full Service',       mechanic: 'Kazeem Lawal',     parts: 21000, labor: 24000, total: 45000, status: 'completed' },
+    { id: 'WO-0281', vehicle: 'Hyundai Tucson 2020', service: 'Engine Diagnostics', mechanic: 'Kazeem Lawal',     parts: 3000,  labor: 12000, total: 15000, status: 'completed' },
+    { id: 'WO-0280', vehicle: 'Toyota Highlander 17',service: 'Clutch Repair',      mechanic: 'Ibrahim Suleiman', parts: 38000, labor: 42000, total: 80000, status: 'awaitingparts' },
+    { id: 'WO-0279', vehicle: 'Nissan Altima 2014',  service: 'Battery Replacement',mechanic: 'Chinedu Obi',      parts: 32000, labor: 8000,  total: 40000, status: 'delivered' },
+    { id: 'WO-0278', vehicle: 'Ford Explorer 2018',  service: 'Tire Change',        mechanic: 'Emeka Uzor',       parts: 5000,  labor: 3000,  total: 8000,  status: 'delivered' },
+    { id: 'WO-0277', vehicle: 'Mercedes C300 2019',  service: 'Brake Job',          mechanic: 'Dayo Afolabi',     parts: 14500, labor: 10500, total: 25000, status: 'delivered' },
+    { id: 'WO-0276', vehicle: 'Toyota Corolla 2016', service: 'Oil Change',         mechanic: 'Gbenga Adebiyi',   parts: 4500,  labor: 7500,  total: 12000, status: 'delivered' }
+  ],
+  parts: [
+    { sku: 'P-OIL-5W30', name: '5W30 Engine Oil (4L)',  usedThisMonth: 22, stock: 18, reorder: 10, cost: 8500,  price: 12500, status: 'instock' },
+    { sku: 'P-BRK-PAD',  name: 'Brake Pad Set',          usedThisMonth: 14, stock: 6,  reorder: 8,  cost: 9000,  price: 14000, status: 'lowstock' },
+    { sku: 'P-BAT-65AH', name: 'Battery 65Ah',           usedThisMonth: 8,  stock: 4,  reorder: 5,  cost: 28000, price: 38000, status: 'lowstock' },
+    { sku: 'P-FLT-AIR',  name: 'Air Filter',             usedThisMonth: 19, stock: 24, reorder: 10, cost: 2200,  price: 3800,  status: 'instock' },
+    { sku: 'P-TIR-15',   name: 'Tire 15" (Maxxis)',     usedThisMonth: 11, stock: 16, reorder: 8,  cost: 22000, price: 32000, status: 'instock' },
+    { sku: 'P-AC-GAS',   name: 'AC Refrigerant R134a',  usedThisMonth: 9,  stock: 7,  reorder: 6,  cost: 6500,  price: 10000, status: 'instock' }
+  ],
+  turnaroundBuckets: [
+    { label: '<4h',   count: 18 },
+    { label: '4-8h',  count: 32 },
+    { label: '8-24h', count: 22 },
+    { label: '1-2d',  count: 9  },
+    { label: '2d+',   count: 4  }
+  ]
+};
+
+const GRID = 'rgba(51,65,85,.5)', TICK = '#94a3b8', GOLD = '#d4a053', GREEN = '#10b981', BLUE = '#3b82f6', AMBER = '#f59e0b', RED = '#ef4444', PURPLE = '#8b5cf6';
+Chart.defaults.color = TICK;
+Chart.defaults.font.family = "'Fira Sans', sans-serif";
+Chart.defaults.font.size = 11;
+const N = v => '\u20A6' + Number(v).toLocaleString();
+const shortN = v => '\u20A6' + (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'k' : v);
+function baseOpts(extra = {}) {
+  return { responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{labels:{boxWidth:10,padding:12,font:{size:11}}}, tooltip:{backgroundColor:'#0f172a',borderColor:'#334155',borderWidth:1,padding:10} },
+    scales:{ x:{grid:{color:GRID},ticks:{color:TICK}}, y:{grid:{color:GRID},ticks:{color:TICK}} }, ...extra };
+}
+function noLegend(o){ o.plugins.legend.display=false; return o; }
+function donutOpts(){ return {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:10,padding:10,font:{size:11}}},tooltip:{backgroundColor:'#0f172a',borderColor:'#334155',borderWidth:1}}}; }
+function nairaAxis(){ return { y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>shortN(v)}} }; }
+const charts = {};
+function makeChart(id, cfg){ if(charts[id]){ charts[id].destroy(); } const el=document.getElementById(id); if(!el) return; charts[id]=new Chart(el, cfg); }
+function statusBadge(s){ return `<span class="status-badge ${s}">${s.replace(/([a-z])([A-Z])/g,'$1 $2')}</span>`; }
+
+function getYearFilter(){ return parseInt(document.getElementById('year-filter').value); }
+function getMonthFilter(){ const v = document.getElementById('month-filter').value; return v === 'all' ? null : parseInt(v); }
+// Demo data is Jan–Apr 2026 only. Selecting a year without data yields an empty filtered set.
+function filteredMonthly(){
+  if (getYearFilter() !== 2026) return [];
+  const m = getMonthFilter();
+  return m ? DATA.monthly.filter(r => r.month === m) : DATA.monthly;
+}
+
+function renderAll(){
+  renderOverview();
+  renderOrders();
+  renderParts();
+  renderFinancials();
+  renderMechanics();
+}
+
+function renderOverview(){
+  const k = DATA.kpis;
+  const m = filteredMonthly();
+  const revFiltered = m.reduce((s,r) => s + r.revenue, 0);
+  const jobsFiltered = m.reduce((s,r) => s + r.jobs, 0);
+  const onTimeFiltered = m.reduce((s,r) => s + r.onTime, 0);
+  const onTimePct = jobsFiltered ? Math.round(onTimeFiltered/jobsFiltered*100) : 0;
+
+  document.getElementById('dashboard-overview').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Jobs Completed</div><div class="kpi-value gold">${jobsFiltered}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Revenue</div><div class="kpi-value green">${N(revFiltered)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Ticket</div><div class="kpi-value">${N(k.avgTicket)}</div><div class="kpi-delta">Per work order</div></div>
+      <div class="kpi-card"><div class="kpi-label">Parts Margin</div><div class="kpi-value gold">${k.partsMargin}%</div><div class="kpi-delta">Gross on parts</div></div>
+      <div class="kpi-card"><div class="kpi-label">On-time Rate</div><div class="kpi-value ${onTimePct >= 85 ? 'green' : 'amber'}">${onTimePct}%</div><div class="kpi-delta">Delivered on time</div></div>
+    </div>
+
+    <div class="section-heading">Revenue &amp; Volume</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Monthly Revenue</span></div><div class="chart-wrap"><canvas id="c-rev"></canvas></div><div class="chart-source">Source: <code>work_orders.total_amount</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Jobs per Month</span></div><div class="chart-wrap"><canvas id="c-jobs"></canvas></div><div class="chart-source">Source: <code>work_orders.completed_at</code></div></div>
+    </div>
+
+    <div class="section-heading">Operations</div>
+    <div class="chart-row cols-3">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Jobs by Service Type</span></div><div class="chart-wrap"><canvas id="c-svc"></canvas></div><div class="chart-source">Source: <code>work_orders.service_type</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Parts vs Labor</span></div><div class="chart-wrap"><canvas id="c-pvl"></canvas></div><div class="chart-source">Source: <code>wo_line_items.type</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Turnaround Distribution</span></div><div class="chart-wrap"><canvas id="c-ta"></canvas></div><div class="chart-source">Source: <code>work_orders.turnaround_hrs</code></div></div>
+    </div>`;
+
+  const mm = DATA.monthly;
+  makeChart('c-rev', {type:'line', data:{labels: mm.map(r=>r.label), datasets:[{label:'Revenue', data: mm.map(r=>r.revenue), borderColor: GOLD, backgroundColor:'rgba(212,160,83,.1)', tension:.35, fill:true, pointRadius:3}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, ...nairaAxis()}}))});
+  makeChart('c-jobs', {type:'bar', data:{labels: mm.map(r=>r.label), datasets:[{label:'Jobs', data: mm.map(r=>r.jobs), backgroundColor: BLUE}]}, options: noLegend(baseOpts())});
+  const svc = DATA.serviceTypes;
+  makeChart('c-svc', {type:'bar', data:{labels: svc.map(s=>s.name), datasets:[{label:'Jobs', data: svc.map(s=>s.jobs), backgroundColor: svc.map(s=>s.color)}]}, options: noLegend({...baseOpts(), indexAxis:'y'})});
+  makeChart('c-pvl', {type:'line', data:{labels: mm.map(r=>r.label), datasets:[
+    {label:'Parts', data: mm.map(r=>r.parts), borderColor: PURPLE, backgroundColor:'rgba(139,92,246,.1)', tension:.3, fill:true, pointRadius:3},
+    {label:'Labor', data: mm.map(r=>r.labor), borderColor: GOLD, backgroundColor:'rgba(212,160,83,.1)', tension:.3, fill:true, pointRadius:3}
+  ]}, options: baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, ...nairaAxis()}})});
+  const tb = DATA.turnaroundBuckets;
+  makeChart('c-ta', {type:'bar', data:{labels: tb.map(b=>b.label), datasets:[{label:'Jobs', data: tb.map(b=>b.count), backgroundColor: GOLD}]}, options: noLegend(baseOpts())});
+}
+
+function renderOrders(){
+  const m = filteredMonthly();
+  const jobs = m.reduce((s,r) => s + r.jobs, 0);
+  const onTime = m.reduce((s,r) => s + r.onTime, 0);
+  const late = jobs - onTime;
+
+  document.getElementById('dashboard-orders').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Orders</div><div class="kpi-value gold">${jobs}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">On-time</div><div class="kpi-value green">${onTime}</div><div class="kpi-delta">Delivered on promise</div></div>
+      <div class="kpi-card"><div class="kpi-label">Late</div><div class="kpi-value red">${late}</div><div class="kpi-delta">Delivered late</div></div>
+      <div class="kpi-card"><div class="kpi-label">In Progress</div><div class="kpi-value" style="color:var(--blue)">4</div><div class="kpi-delta">Open right now</div></div>
+      <div class="kpi-card"><div class="kpi-label">Awaiting Parts</div><div class="kpi-value amber">2</div><div class="kpi-delta">Blocked</div></div>
+    </div>
+
+    <div class="section-heading">Delivery Performance</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">On-time vs Late</span></div><div class="chart-wrap"><canvas id="c-ovl"></canvas></div><div class="chart-source">Source: <code>work_orders.promised_at, delivered_at</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Turnaround Buckets</span></div><div class="chart-wrap"><canvas id="c-ta2"></canvas></div><div class="chart-source">Source: <code>work_orders.turnaround_hrs</code></div></div>
+    </div>
+
+    <div class="section-heading">Recent Work Orders</div>
+    <div class="chart-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>WO</th><th>Vehicle</th><th>Service</th><th>Mechanic</th><th>Parts</th><th>Labor</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody>${DATA.recentOrders.map(o => `
+          <tr><td style="color:var(--gold);font-family:var(--font-head)">${o.id}</td><td>${o.vehicle}</td><td>${o.service}</td><td>${o.mechanic}</td><td>${N(o.parts)}</td><td>${N(o.labor)}</td><td style="color:var(--green)">${N(o.total)}</td><td>${statusBadge(o.status)}</td></tr>
+        `).join('')}</tbody>
+      </table>
+    </div>`;
+
+  const mm = DATA.monthly;
+  makeChart('c-ovl', {type:'bar', data:{labels: mm.map(r=>r.label), datasets:[
+    {label:'On-time', data: mm.map(r=>r.onTime), backgroundColor: GREEN},
+    {label:'Late',    data: mm.map(r=>r.jobs - r.onTime), backgroundColor: RED}
+  ]}, options: baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK},stacked:true}, y:{grid:{color:GRID},ticks:{color:TICK},stacked:true}}})});
+  const tb = DATA.turnaroundBuckets;
+  makeChart('c-ta2', {type:'bar', data:{labels: tb.map(b=>b.label), datasets:[{label:'Jobs', data: tb.map(b=>b.count), backgroundColor: GOLD}]}, options: noLegend(baseOpts())});
+}
+
+function renderParts(){
+  const p = DATA.parts;
+  const totalUsed = p.reduce((s,x) => s + x.usedThisMonth, 0);
+  const totalValue = p.reduce((s,x) => s + x.stock * x.cost, 0);
+  const lowStock = p.filter(x => x.stock <= x.reorder).length;
+  const avgMargin = Math.round(p.reduce((s,x) => s + ((x.price - x.cost)/x.price*100), 0) / p.length);
+
+  document.getElementById('dashboard-parts').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Parts Used (Apr)</div><div class="kpi-value gold">${totalUsed}</div><div class="kpi-delta">Units consumed</div></div>
+      <div class="kpi-card"><div class="kpi-label">Inventory Value</div><div class="kpi-value green">${N(totalValue)}</div><div class="kpi-delta">At cost</div></div>
+      <div class="kpi-card"><div class="kpi-label">Low-stock Items</div><div class="kpi-value ${lowStock>0?'red':'green'}">${lowStock}</div><div class="kpi-delta">At/below reorder</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Margin</div><div class="kpi-value gold">${avgMargin}%</div><div class="kpi-delta">Price vs cost</div></div>
+      <div class="kpi-card"><div class="kpi-label">SKUs Tracked</div><div class="kpi-value">${p.length}</div><div class="kpi-delta">Top movers</div></div>
+    </div>
+
+    <div class="section-heading">Parts Movement</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Usage This Month</span></div><div class="chart-wrap"><canvas id="c-pu"></canvas></div><div class="chart-source">Source: <code>wo_line_items.part_sku</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Stock Level</span></div><div class="chart-wrap"><canvas id="c-ps"></canvas></div><div class="chart-source">Source: <code>inventory.stock_qty</code></div></div>
+    </div>
+
+    <div class="section-heading">Inventory Snapshot</div>
+    <div class="chart-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>SKU</th><th>Part</th><th>Used</th><th>Stock</th><th>Reorder</th><th>Cost</th><th>Price</th><th>Status</th></tr></thead>
+        <tbody>${p.map(x => `
+          <tr><td style="color:var(--gold);font-family:var(--font-head)">${x.sku}</td><td>${x.name}</td><td>${x.usedThisMonth}</td><td>${x.stock}</td><td>${x.reorder}</td><td>${N(x.cost)}</td><td>${N(x.price)}</td><td>${statusBadge(x.status)}</td></tr>
+        `).join('')}</tbody>
+      </table>
+    </div>`;
+
+  makeChart('c-pu', {type:'bar', data:{labels: p.map(x=>x.name), datasets:[{label:'Used', data: p.map(x=>x.usedThisMonth), backgroundColor: GOLD}]}, options: noLegend({...baseOpts(), indexAxis:'y'})});
+  makeChart('c-ps', {type:'bar', data:{labels: p.map(x=>x.name), datasets:[{label:'Stock', data: p.map(x=>x.stock), backgroundColor: p.map(x => x.stock <= x.reorder ? RED : GREEN)}]}, options: noLegend({...baseOpts(), indexAxis:'y'})});
+}
+
+function renderFinancials(){
+  const m = filteredMonthly();
+  const totalRev = m.reduce((s,r) => s + r.revenue, 0);
+  const totalParts = m.reduce((s,r) => s + r.parts, 0);
+  const totalLabor = m.reduce((s,r) => s + r.labor, 0);
+  const avgMonth = Math.round(totalRev / Math.max(m.length, 1));
+
+  document.getElementById('dashboard-financials').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value green">${N(totalRev)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Parts Revenue</div><div class="kpi-value" style="color:var(--purple)">${N(totalParts)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Labor Revenue</div><div class="kpi-value gold">${N(totalLabor)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Monthly</div><div class="kpi-value">${N(avgMonth)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Parts Margin</div><div class="kpi-value gold">${DATA.kpis.partsMargin}%</div><div class="kpi-delta">Gross margin</div></div>
+    </div>
+
+    <div class="section-heading">Revenue Composition</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Revenue by Month</span></div><div class="chart-wrap"><canvas id="c-fin-rev"></canvas></div><div class="chart-source">Source: <code>work_orders.total_amount</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Parts vs Labor Split</span></div><div class="chart-wrap"><canvas id="c-fin-pvl"></canvas></div><div class="chart-source">Source: <code>wo_line_items.type</code></div></div>
+    </div>`;
+
+  const mm = DATA.monthly;
+  makeChart('c-fin-rev', {type:'bar', data:{labels: mm.map(r=>r.label), datasets:[
+    {label:'Parts', data: mm.map(r=>r.parts), backgroundColor: PURPLE},
+    {label:'Labor', data: mm.map(r=>r.labor), backgroundColor: GOLD}
+  ]}, options: baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK},stacked:true}, y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>shortN(v)},stacked:true}}})});
+  const partsTotal = mm.reduce((s,r) => s + r.parts, 0);
+  const laborTotal = mm.reduce((s,r) => s + r.labor, 0);
+  makeChart('c-fin-pvl', {type:'doughnut', data:{labels:['Parts','Labor'], datasets:[{data:[partsTotal, laborTotal], backgroundColor:[PURPLE, GOLD], borderWidth:0}]}, options: donutOpts()});
+}
+
+function renderMechanics(){
+  const me = DATA.mechanics;
+  const totalJobs = me.reduce((s,t) => s + t.jobs, 0);
+  const avgRating = (me.reduce((s,t) => s + t.rating, 0) / me.length).toFixed(2);
+  const avgOnTime = Math.round(me.reduce((s,t) => s + t.onTimeRate, 0) / me.length);
+  const top = [...me].sort((a,b) => b.jobs - a.jobs)[0];
+
+  document.getElementById('dashboard-mechanics').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Mechanics</div><div class="kpi-value gold">${me.length}</div><div class="kpi-delta">On roster</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total Jobs</div><div class="kpi-value">${totalJobs}</div><div class="kpi-delta">Jan&ndash;Apr</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Rating</div><div class="kpi-value green">${avgRating}</div><div class="kpi-delta">Out of 5.0</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg On-time</div><div class="kpi-value gold">${avgOnTime}%</div><div class="kpi-delta">Team avg</div></div>
+      <div class="kpi-card"><div class="kpi-label">Top Mechanic</div><div class="kpi-value" style="font-size:17px">${top.name.split(' ')[0]}</div><div class="kpi-delta">${top.jobs} jobs</div></div>
+    </div>
+
+    <div class="section-heading">Team Performance</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Jobs per Mechanic</span></div><div class="chart-wrap"><canvas id="c-me-j"></canvas></div><div class="chart-source">Source: <code>work_orders.mechanic_id</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">On-time Rate</span></div><div class="chart-wrap"><canvas id="c-me-o"></canvas></div><div class="chart-source">Source: <code>work_orders.delivered_at</code></div></div>
+    </div>
+
+    <div class="section-heading">Mechanic Directory</div>
+    <div class="chart-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Specialty</th><th>Rating</th><th>Jobs</th><th>On-time %</th><th>Avg Turnaround</th></tr></thead>
+        <tbody>${me.map(t => `
+          <tr><td style="color:var(--gold);font-family:var(--font-head)">${t.id}</td><td>${t.name}</td><td>${t.specialty}</td><td>⭐ ${t.rating}</td><td>${t.jobs}</td><td style="color:${t.onTimeRate >= 90 ? 'var(--green)' : 'var(--amber)'}">${t.onTimeRate}%</td><td>${t.avgTurnaround}h</td></tr>
+        `).join('')}</tbody>
+      </table>
+    </div>`;
+
+  const names = me.map(t => t.name.split(' ')[0]);
+  makeChart('c-me-j', {type:'bar', data:{labels: names, datasets:[{label:'Jobs', data: me.map(t=>t.jobs), backgroundColor: GOLD}]}, options: noLegend(baseOpts())});
+  makeChart('c-me-o', {type:'bar', data:{labels: names, datasets:[{label:'On-time %', data: me.map(t=>t.onTimeRate), backgroundColor: me.map(t => t.onTimeRate >= 90 ? GREEN : AMBER)}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'}, min:0, max:100}}}))});
+}
+
+function switchTab(name){
+  document.querySelectorAll('.dashboard').forEach(d => d.classList.remove('active'));
+  document.getElementById('dashboard-' + name).classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  const sidebarMap = { overview:0, orders:1, parts:2, financials:3, mechanics:4 };
+  const sidebarItems = document.querySelectorAll('.sidebar-item');
+  if (sidebarMap[name] !== undefined) sidebarItems[sidebarMap[name]].classList.add('active');
+  const titles = { overview:'Overview', orders:'Work Orders', parts:'Parts', financials:'Financials', mechanics:'Mechanics' };
+  document.getElementById('topbar-title').textContent = titles[name];
+  const mobileTitle = document.getElementById('mobile-topbar-title');
+  if (mobileTitle) mobileTitle.textContent = titles[name];
+  document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+  const nav = document.querySelector('.mobile-nav-item[data-tab="'+name+'"]');
+  if (nav) nav.classList.add('active');
+  // Close drawer on tab change
+  const drawer = document.getElementById('mobile-drawer');
+  if (drawer && drawer.classList.contains('open')) toggleDrawer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── Mobile drawer toggle ── */
+function toggleDrawer() {
+  document.getElementById('mobile-drawer').classList.toggle('open');
+  document.getElementById('mobile-drawer-backdrop').classList.toggle('open');
+}
+
+// Mobile filter bar mirrors desktop filters. Changes in either propagate to the other.
+function syncFiltersFromMobile(){
+  document.getElementById('year-filter').value  = document.getElementById('mobile-year-filter').value;
+  document.getElementById('month-filter').value = document.getElementById('mobile-month-filter').value;
+  renderAll();
+}
+function syncFiltersFromDesktop(){
+  const my = document.getElementById('mobile-year-filter');
+  const mm = document.getElementById('mobile-month-filter');
+  if (my) my.value = document.getElementById('year-filter').value;
+  if (mm) mm.value = document.getElementById('month-filter').value;
+  renderAll();
+}
+document.getElementById('year-filter').addEventListener('change', syncFiltersFromDesktop);
+document.getElementById('month-filter').addEventListener('change', syncFiltersFromDesktop);
+document.getElementById('mobile-year-filter').addEventListener('change', syncFiltersFromMobile);
+document.getElementById('mobile-month-filter').addEventListener('change', syncFiltersFromMobile);
+renderAll();
+</script>
+
+</body>
+</html>

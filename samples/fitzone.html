@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" href="/beehi-analytics-review/favicon.ico?v=3828d98af211" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/beehi-analytics-review/logo/favicon-32.png?v=4aa3d858a87f" />
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/beehi-analytics-review/logo/favicon.svg?v=381987b5a167" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FitZone Lagos — Performance Tracker</title>
+  <meta name="description" content="Gym membership analytics dashboard for FitZone Lagos, powered by BI Analytics Africa." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0f1e; --bg2: #0f172a; --surface: #1e293b; --surface2: #263348;
+      --border: #334155; --text: #f1f5f9; --muted: #94a3b8;
+      --gold: #d4a053; --gold-bright: #e8b866; --gold-dim: rgba(212,160,83,.10);
+      --green: #10b981; --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444; --purple: #8b5cf6;
+      --font-head: 'Fira Code', monospace; --font-body: 'Fira Sans', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar { width: 240px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--border); padding: 0 0 20px 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-brand { padding: 0 20px; min-height: 72px; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    .sidebar-brand-name { font-family: var(--font-head); font-size: 17px; font-weight: 700; color: var(--gold); }
+    .sidebar-brand-tagline { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: .5px; text-transform: uppercase; }
+    .sidebar-section { padding: 16px 20px 6px; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; color: var(--muted); cursor: pointer; border-left: 2px solid transparent; transition: all .15s; user-select: none; }
+    .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+    .sidebar-item.active { background: var(--gold-dim); color: var(--gold); border-left-color: var(--gold); }
+    .sidebar-item svg { flex-shrink: 0; opacity: .8; }
+    .sidebar-spacer { flex: 1; }
+
+    /* ── Main ── */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-x: hidden; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 28px; min-height: 72px; border-bottom: 1px solid var(--border); background: rgba(15,23,42,.7); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--text); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .badge { font-size: 11px; color: var(--green); background: rgba(16,185,129,.1); padding: 4px 10px; border-radius: 12px; font-weight: 500; }
+    .date-filter { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: var(--font-body); cursor: pointer; }
+
+    .content { padding: 24px 28px; }
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+
+    .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 500; }
+    .kpi-value { font-family: var(--font-head); font-size: 26px; font-weight: 700; margin: 6px 0 2px; color: var(--text); }
+    .kpi-value.gold { color: var(--gold); }
+    .kpi-value.green { color: var(--green); }
+    .kpi-value.amber { color: var(--amber); }
+    .kpi-value.red { color: var(--red); }
+    .kpi-delta { font-size: 11px; color: var(--muted); }
+
+    .section-heading { font-family: var(--font-head); font-size: 13px; font-weight: 600; color: var(--gold); margin: 20px 0 10px; letter-spacing: .04em; }
+    .chart-row { display: grid; gap: 14px; margin-bottom: 16px; }
+    .chart-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .chart-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; min-width: 0; overflow: hidden; }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .chart-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .chart-wrap { position: relative; height: 220px; max-width: 100%; overflow: hidden; }
+    .chart-source { font-size: 10px; color: var(--muted); margin-top: 8px; font-family: var(--font-head); }
+    .chart-source code { background: var(--surface2); padding: 1px 4px; border-radius: 3px; font-size: 10px; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .data-table th { text-align: left; padding: 10px 12px; background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .data-table tr:hover td { background: rgba(212,160,83,.04); }
+
+    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .status-badge.active { background: rgba(16,185,129,.15); color: var(--green); }
+    .status-badge.expiring { background: rgba(245,158,11,.15); color: var(--amber); }
+    .status-badge.lapsed { background: rgba(239,68,68,.15); color: var(--red); }
+    .status-badge.monthly { background: rgba(59,130,246,.15); color: var(--blue); }
+    .status-badge.quarterly { background: rgba(139,92,246,.15); color: var(--purple); }
+    .status-badge.yearly { background: rgba(212,160,83,.15); color: var(--gold); }
+
+        /* ── Mobile-only elements (hidden on desktop) ── */
+    .mobile-topbar { display: none; }
+    .mobile-bottom-nav { display: none; }
+    .mobile-drawer-backdrop { display: none; }
+    .mobile-drawer { display: none; }
+    .mobile-filter-bar { display: none; }
+
+    @media (max-width: 1024px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .chart-row.cols-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      /* Hide desktop elements */
+      .sidebar { display: none; }
+      .topbar { display: none; }
+
+      /* ── Mobile topbar (hamburger + title + badge + logout) ── */
+      .mobile-topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: 0; z-index: 30;
+      }
+      .mobile-topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .mobile-hamburger {
+        background: none; border: none; color: var(--text);
+        padding: 4px; cursor: pointer; display: flex; flex-shrink: 0;
+      }
+      .mobile-topbar-title {
+        font-family: var(--font-head); font-size: 14px; font-weight: 600;
+        color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .mobile-topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+      .mobile-badge {
+        background: var(--gold-dim); color: var(--gold);
+        border: 1px solid rgba(212,160,83,.3);
+        border-radius: 12px; padding: 2px 8px;
+        font-size: 9px; font-weight: 600;
+        white-space: nowrap;
+      }
+      .mobile-logout-btn {
+        background: var(--surface2); border: 1px solid var(--border);
+        color: var(--muted); border-radius: 6px;
+        padding: 6px 10px; font-size: 10px; text-decoration: none;
+        display: flex; align-items: center; gap: 4px;
+      }
+
+      /* ── Mobile filter bar (below topbar) ── */
+      .mobile-filter-bar {
+        display: flex; gap: 8px;
+        padding: 10px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: 57px; z-index: 25;
+      }
+      .mobile-filter-bar select {
+        flex: 1; background: var(--surface2); border: 1px solid var(--border);
+        color: var(--text); border-radius: 6px; padding: 6px 10px;
+        font-family: var(--font-body); font-size: 12px;
+      }
+
+      /* ── Mobile bottom tab bar ── */
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding: 8px 4px; padding-bottom: calc(8px + env(safe-area-inset-bottom));
+        z-index: 30;
+        box-shadow: 0 -4px 20px rgba(0,0,0,.3);
+      }
+      .mobile-nav-item {
+        flex: 1; min-width: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 4px; padding: 6px 2px;
+        background: none; border: none;
+        color: var(--muted); cursor: pointer;
+        font-family: var(--font-body); font-size: 9px;
+        transition: color .15s;
+        overflow: hidden; white-space: nowrap;
+      }
+      .mobile-nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+      .mobile-nav-item.active { color: var(--gold); }
+
+      /* ── Mobile drawer (slide-out side panel) ── */
+      .mobile-drawer-backdrop {
+        display: block;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,.6);
+        opacity: 0; pointer-events: none;
+        transition: opacity .3s;
+        z-index: 40;
+      }
+      .mobile-drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+      .mobile-drawer {
+        display: flex; flex-direction: column;
+        position: fixed; top: 0; left: 0; bottom: 0;
+        width: 80%; max-width: 300px;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform .3s ease;
+        overflow-y: auto;
+      }
+      .mobile-drawer.open { transform: translateX(0); }
+      .mobile-drawer-header {
+        padding: 20px; border-bottom: 1px solid var(--border);
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .mobile-drawer-brand {
+        font-family: var(--font-head); font-size: 15px; font-weight: 700;
+        color: var(--gold);
+      }
+      .mobile-drawer-brand span { display: block; font-size: 10px; color: var(--muted); font-weight: 400; margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+      .mobile-drawer-close {
+        background: none; border: none; color: var(--muted); cursor: pointer;
+      }
+      .mobile-drawer-section {
+        padding: 12px 20px 6px;
+        font-size: 10px; font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase; letter-spacing: .08em;
+      }
+      .mobile-drawer-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 20px;
+        color: var(--muted); text-decoration: none;
+        font-size: 14px; font-weight: 500;
+        border: none; background: none; width: 100%; text-align: left;
+        font-family: var(--font-body); cursor: pointer;
+      }
+      .mobile-drawer-item:hover { background: var(--surface2); color: var(--text); }
+      .mobile-drawer-item svg { flex-shrink: 0; }
+
+      /* ── Content adjustments ── */
+      .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .kpi-card { padding: 14px; }
+      .kpi-value { font-size: 20px; }
+      .kpi-label { font-size: 10px; }
+      .kpi-delta { font-size: 10px; }
+      .chart-row.cols-2, .chart-row.cols-3 { grid-template-columns: 1fr; }
+      .content { padding: 16px 12px 100px 12px; }
+      .section-heading { font-size: 10px; }
+      .chart-card { padding: 14px; }
+      .chart-title { font-size: 12px; }
+      .data-table { font-size: 11px; }
+      .data-table th, .data-table td { padding: 8px; }
+    }
+  </style>
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<div class="layout">
+  <!-- Mobile topbar -->
+
+  <!-- Sidebar -->
+  <!-- ── Mobile Drawer Backdrop ── -->
+  <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="toggleDrawer()"></div>
+
+  <!-- ── Mobile Drawer (slide-out side panel) ── -->
+  <aside class="mobile-drawer" id="mobile-drawer">
+    <div class="mobile-drawer-header">
+      <div class="mobile-drawer-brand">
+        FitZone Lagos
+        <span>Performance Tracker</span>
+      </div>
+      <button class="mobile-drawer-close" onclick="toggleDrawer()" aria-label="Close menu">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/beehi-analytics-review/><line x1="6" y1="6" x2="18" y2="18"/beehi-analytics-review/></svg>
+      </button>
+    </div>
+
+    <div class="mobile-drawer-section">Dashboards</div>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('overview');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>
+      Overview
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('members');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/beehi-analytics-review/><circle cx="9" cy="7" r="4"/beehi-analytics-review/></svg>
+      Members
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('classes');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/beehi-analytics-review/><line x1="16" y1="2" x2="16" y2="6"/beehi-analytics-review/><line x1="8" y1="2" x2="8" y2="6"/beehi-analytics-review/><line x1="3" y1="10" x2="21" y2="10"/beehi-analytics-review/></svg>
+      Classes
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('financials');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>
+      Financials
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('trainers');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0 0 20 10 10 0 0 0 0-20z"/beehi-analytics-review/><path d="M12 8v4l3 2"/beehi-analytics-review/></svg>
+      Trainers
+    </a>
+
+    <div style="flex:1"></div>
+
+    <a class="mobile-drawer-item" href="/beehi-analytics-review/samples.html" style="border-top:1px solid var(--border);color:var(--red)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/beehi-analytics-review/><polyline points="16 17 21 12 16 7"/beehi-analytics-review/><line x1="21" y1="12" x2="9" y2="12"/beehi-analytics-review/></svg>
+      Logout
+    </a>
+  </aside>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-name">FitZone Lagos</div>
+      <div class="sidebar-brand-tagline">Performance Tracker</div>
+    </div>
+
+    <div class="sidebar-section">Dashboards</div>
+    <div class="sidebar-item active" onclick="switchTab('overview')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>
+      Overview
+    </div>
+    <div class="sidebar-item" onclick="switchTab('members')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/beehi-analytics-review/><circle cx="9" cy="7" r="4"/beehi-analytics-review/></svg>
+      Members
+    </div>
+    <div class="sidebar-item" onclick="switchTab('classes')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/beehi-analytics-review/><line x1="16" y1="2" x2="16" y2="6"/beehi-analytics-review/><line x1="8" y1="2" x2="8" y2="6"/beehi-analytics-review/><line x1="3" y1="10" x2="21" y2="10"/beehi-analytics-review/></svg>
+      Classes
+    </div>
+    <div class="sidebar-item" onclick="switchTab('financials')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>
+      Financials
+    </div>
+    <div class="sidebar-item" onclick="switchTab('trainers')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0 0 20 10 10 0 0 0 0-20z"/beehi-analytics-review/><path d="M12 8v4l3 2"/beehi-analytics-review/></svg>
+      Trainers
+    </div>
+
+    <div class="sidebar-spacer"></div>
+    <a class="sidebar-item" href="/beehi-analytics-review/samples.html" style="text-decoration:none;border-top:1px solid var(--border);padding-top:12px;color:var(--red)">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/beehi-analytics-review/><polyline points="16 17 21 12 16 7"/beehi-analytics-review/><line x1="21" y1="12" x2="9" y2="12"/beehi-analytics-review/></svg>
+      Logout
+    </a>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    
+
+    <!-- ── Mobile Topbar (visible only on mobile) ── -->
+    <header class="mobile-topbar">
+      <div class="mobile-topbar-left">
+        <button class="mobile-hamburger" onclick="toggleDrawer()" aria-label="Open menu">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/beehi-analytics-review/><line x1="3" y1="6" x2="21" y2="6"/beehi-analytics-review/><line x1="3" y1="18" x2="21" y2="18"/beehi-analytics-review/></svg>
+        </button>
+        <div class="mobile-topbar-title" id="mobile-topbar-title">Overview</div>
+      </div>
+      <div class="mobile-topbar-right">
+        <span class="mobile-badge">Live &middot; Demo</span>
+        <a class="mobile-logout-btn" href="/beehi-analytics-review/samples.html" aria-label="Logout">Logout</a>
+      </div>
+    </header>
+
+    <!-- ── Mobile Filter Bar ── -->
+    <div class="mobile-filter-bar">
+      <select id="mobile-year-filter" aria-label="Year">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+      </select>
+      <select id="mobile-month-filter" aria-label="Month">
+        <option value="all">All months</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4" selected>April</option>
+      </select>
+    </div>
+
+    <!-- Desktop Topbar -->
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Overview</div>
+      <div class="topbar-right">
+        <span class="badge">Last updated: Apr 11, 2026 · 8:00 AM</span>
+        <select class="date-filter" id="year-filter" aria-label="Year filter">
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+        </select>
+        <select class="date-filter" id="month-filter" aria-label="Month filter">
+          <option value="all">All months</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4" selected>April</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="dashboard active" id="dashboard-overview"></div>
+      <div class="dashboard" id="dashboard-members"></div>
+      <div class="dashboard" id="dashboard-classes"></div>
+      <div class="dashboard" id="dashboard-financials"></div>
+      <div class="dashboard" id="dashboard-trainers"></div>
+    </div>
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav">
+  <button class="mobile-nav-item active" data-tab="overview" onclick="switchTab('overview')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>Overview
+  </button>
+  <button class="mobile-nav-item" data-tab="members" onclick="switchTab('members')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/beehi-analytics-review/><circle cx="9" cy="7" r="4"/beehi-analytics-review/></svg>Members
+  </button>
+  <button class="mobile-nav-item" data-tab="classes" onclick="switchTab('classes')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/beehi-analytics-review/><line x1="3" y1="10" x2="21" y2="10"/beehi-analytics-review/></svg>Classes
+  </button>
+  <button class="mobile-nav-item" data-tab="financials" onclick="switchTab('financials')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>Revenue
+  </button>
+  <button class="mobile-nav-item" data-tab="trainers" onclick="switchTab('trainers')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/beehi-analytics-review/><path d="M12 8v4l3 2"/beehi-analytics-review/></svg>Trainers
+  </button>
+
+</nav>
+
+<script>
+/* ══════════════════════════════════════════════════
+   DEMO DATA — hardcoded for FitZone Lagos
+   In a real client, this object is replaced by a
+   Google Sheets fetch (see olamidecrafts dashboard).
+══════════════════════════════════════════════════ */
+const DATA = {
+  // Aggregate KPIs (most recent month)
+  kpis: {
+    activeMembers: 142,
+    monthlyRevenue: 2140000,
+    newSignupsThisMonth: 18,
+    churnRate: 4.2,
+    capacityUtilization: 76
+  },
+
+  // Per-month rollups (Jan–Apr 2026)
+  monthly: [
+    { month: 1, label: 'Jan', revenue: 1680000, signups: 12, churned: 8, totalMembers: 115 },
+    { month: 2, label: 'Feb', revenue: 1850000, signups: 15, churned: 6, totalMembers: 124 },
+    { month: 3, label: 'Mar', revenue: 2020000, signups: 22, churned: 4, totalMembers: 142 },
+    { month: 4, label: 'Apr', revenue: 2140000, signups: 18, churned: 6, totalMembers: 154 }
+  ],
+
+  // Membership tier distribution (current)
+  tiers: {
+    monthly:   { count: 78, price: 15000, color: '#3b82f6' },
+    quarterly: { count: 45, price: 40000, color: '#8b5cf6' },
+    yearly:    { count: 19, price: 140000, color: '#d4a053' }
+  },
+
+  // Class attendance totals (Jan–Apr 2026)
+  classes: [
+    { name: 'HIIT',      attendance: 412, avgPerSession: 22, trainer: 'Tunde Akin',    sessions: 19 },
+    { name: 'Yoga',      attendance: 348, avgPerSession: 18, trainer: 'Kemi Oladele',  sessions: 19 },
+    { name: 'Spin',      attendance: 306, avgPerSession: 20, trainer: 'Chidi Okonkwo', sessions: 15 },
+    { name: 'CrossFit',  attendance: 284, avgPerSession: 16, trainer: 'Tunde Akin',    sessions: 18 },
+    { name: 'Boxing',    attendance: 238, avgPerSession: 14, trainer: 'Musa Ibrahim',  sessions: 17 },
+    { name: 'Pilates',   attendance: 196, avgPerSession: 12, trainer: 'Kemi Oladele',  sessions: 16 },
+    { name: 'Zumba',     attendance: 182, avgPerSession: 15, trainer: 'Adaobi Nnamdi', sessions: 12 },
+    { name: 'Strength',  attendance: 158, avgPerSession: 11, trainer: 'Chidi Okonkwo', sessions: 14 }
+  ],
+
+  // Peak hours (attendance count by hour, avg across month)
+  peakHours: [
+    { hour: '5 AM',  count: 34 },
+    { hour: '6 AM',  count: 78 },
+    { hour: '7 AM',  count: 92 },
+    { hour: '12 PM', count: 41 },
+    { hour: '1 PM',  count: 52 },
+    { hour: '5 PM',  count: 86 },
+    { hour: '6 PM',  count: 124 },
+    { hour: '7 PM',  count: 108 },
+    { hour: '8 PM',  count: 62 }
+  ],
+
+  // Trainers
+  trainers: [
+    { id: 'T01', name: 'Tunde Akin',    specialty: 'HIIT, CrossFit',    rating: 4.8, sessions: 37, members: 48, retentionRate: 92 },
+    { id: 'T02', name: 'Kemi Oladele',  specialty: 'Yoga, Pilates',      rating: 4.9, sessions: 35, members: 42, retentionRate: 95 },
+    { id: 'T03', name: 'Chidi Okonkwo', specialty: 'Spin, Strength',     rating: 4.6, sessions: 29, members: 36, retentionRate: 88 },
+    { id: 'T04', name: 'Musa Ibrahim',  specialty: 'Boxing, Combat',     rating: 4.7, sessions: 17, members: 24, retentionRate: 85 },
+    { id: 'T05', name: 'Adaobi Nnamdi', specialty: 'Zumba, Dance',       rating: 4.8, sessions: 12, members: 18, retentionRate: 90 }
+  ],
+
+  // Recent members (sample of 10 most recent sign-ups)
+  recentMembers: [
+    { id: 'M142', name: 'Folake Adeyemi',  tier: 'quarterly', joined: '2026-04-09', status: 'active',   monthly: 13333 },
+    { id: 'M141', name: 'Bayo Ogundimu',   tier: 'yearly',    joined: '2026-04-08', status: 'active',   monthly: 11667 },
+    { id: 'M140', name: 'Ifeoma Chukwu',   tier: 'monthly',   joined: '2026-04-05', status: 'active',   monthly: 15000 },
+    { id: 'M139', name: 'Emeka Nwosu',     tier: 'monthly',   joined: '2026-04-04', status: 'active',   monthly: 15000 },
+    { id: 'M138', name: 'Zainab Bello',    tier: 'quarterly', joined: '2026-04-03', status: 'active',   monthly: 13333 },
+    { id: 'M137', name: 'Tolu Adebayo',    tier: 'monthly',   joined: '2026-04-02', status: 'expiring', monthly: 15000 },
+    { id: 'M136', name: 'Ngozi Okoro',     tier: 'yearly',    joined: '2026-03-30', status: 'active',   monthly: 11667 },
+    { id: 'M135', name: 'Yusuf Abdullahi', tier: 'monthly',   joined: '2026-03-28', status: 'active',   monthly: 15000 },
+    { id: 'M134', name: 'Blessing Eze',    tier: 'quarterly', joined: '2026-03-25', status: 'active',   monthly: 13333 },
+    { id: 'M133', name: 'Sani Muhammed',   tier: 'monthly',   joined: '2026-03-22', status: 'lapsed',   monthly: 15000 }
+  ],
+
+  // Upcoming classes today
+  upcomingClasses: [
+    { time: '6:00 AM',  name: 'HIIT',     trainer: 'Tunde Akin',    booked: 18, capacity: 20 },
+    { time: '7:00 AM',  name: 'Yoga',     trainer: 'Kemi Oladele',  booked: 14, capacity: 20 },
+    { time: '12:30 PM', name: 'Spin',     trainer: 'Chidi Okonkwo', booked: 16, capacity: 20 },
+    { time: '5:30 PM',  name: 'Boxing',   trainer: 'Musa Ibrahim',  booked: 12, capacity: 15 },
+    { time: '6:00 PM',  name: 'CrossFit', trainer: 'Tunde Akin',    booked: 20, capacity: 20 },
+    { time: '7:00 PM',  name: 'Zumba',    trainer: 'Adaobi Nnamdi', booked: 15, capacity: 20 },
+    { time: '7:30 PM',  name: 'Pilates',  trainer: 'Kemi Oladele',  booked: 10, capacity: 15 }
+  ]
+};
+
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
+const GRID = 'rgba(51,65,85,.5)', TICK = '#94a3b8', GOLD = '#d4a053', GREEN = '#10b981', BLUE = '#3b82f6', AMBER = '#f59e0b', RED = '#ef4444', PURPLE = '#8b5cf6';
+Chart.defaults.color = TICK;
+Chart.defaults.font.family = "'Fira Sans', sans-serif";
+Chart.defaults.font.size = 11;
+const N = v => '\u20A6' + Number(v).toLocaleString();
+const shortN = v => '\u20A6' + (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'k' : v);
+function baseOpts(extra = {}) {
+  return { responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{labels:{boxWidth:10,padding:12,font:{size:11}}}, tooltip:{backgroundColor:'#0f172a',borderColor:'#334155',borderWidth:1,padding:10} },
+    scales:{ x:{grid:{color:GRID},ticks:{color:TICK}}, y:{grid:{color:GRID},ticks:{color:TICK}} }, ...extra };
+}
+function noLegend(o){ o.plugins.legend.display=false; return o; }
+function donutOpts(){ return {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:10,padding:10,font:{size:11}}},tooltip:{backgroundColor:'#0f172a',borderColor:'#334155',borderWidth:1}}}; }
+function nairaAxis(){ return { y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>shortN(v)}} }; }
+const charts = {};
+function makeChart(id, cfg){ if(charts[id]){ charts[id].destroy(); } const el=document.getElementById(id); if(!el) return; charts[id]=new Chart(el, cfg); }
+function tierBadge(t){ return `<span class="status-badge ${t}">${t}</span>`; }
+function statusBadge(s){ return `<span class="status-badge ${s}">${s}</span>`; }
+
+/* ══════════════════════════════════════════════════
+   FILTER STATE
+══════════════════════════════════════════════════ */
+function getYearFilter(){ return parseInt(document.getElementById('year-filter').value); }
+function getMonthFilter(){ const v = document.getElementById('month-filter').value; return v === 'all' ? null : parseInt(v); }
+// Demo data is Jan–Apr 2026 only. Selecting a year without data yields an empty filtered set.
+function filteredMonthly(){
+  if (getYearFilter() !== 2026) return [];
+  const m = getMonthFilter();
+  return m ? DATA.monthly.filter(r => r.month === m) : DATA.monthly;
+}
+
+/* ══════════════════════════════════════════════════
+   RENDER
+══════════════════════════════════════════════════ */
+function renderAll(){
+  renderOverview();
+  renderMembers();
+  renderClasses();
+  renderFinancials();
+  renderTrainers();
+}
+
+function renderOverview(){
+  const k = DATA.kpis;
+  const m = filteredMonthly();
+  const revFiltered = m.reduce((s,r) => s + r.revenue, 0);
+  const signupsFiltered = m.reduce((s,r) => s + r.signups, 0);
+  const churnedFiltered = m.reduce((s,r) => s + r.churned, 0);
+
+  document.getElementById('dashboard-overview').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Active Members</div><div class="kpi-value gold">${k.activeMembers}</div><div class="kpi-delta">+18 this month</div></div>
+      <div class="kpi-card"><div class="kpi-label">Revenue</div><div class="kpi-value green">${N(revFiltered)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">New Sign-ups</div><div class="kpi-value">${signupsFiltered}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Churn Rate</div><div class="kpi-value amber">${k.churnRate}%</div><div class="kpi-delta">Month-on-month</div></div>
+      <div class="kpi-card"><div class="kpi-label">Class Capacity</div><div class="kpi-value">${k.capacityUtilization}%</div><div class="kpi-delta">Avg utilization</div></div>
+    </div>
+
+    <div class="section-heading">Revenue &amp; Growth</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Monthly Revenue</span></div><div class="chart-wrap"><canvas id="c-rev"></canvas></div><div class="chart-source">Source: <code>membership_payments</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Member Growth</span></div><div class="chart-wrap"><canvas id="c-growth"></canvas></div><div class="chart-source">Source: <code>members.joined_at, members.left_at</code></div></div>
+    </div>
+
+    <div class="section-heading">Operations</div>
+    <div class="chart-row cols-3">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Membership Tiers</span></div><div class="chart-wrap"><canvas id="c-tiers"></canvas></div><div class="chart-source">Source: <code>members.tier</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Peak Hours</span></div><div class="chart-wrap"><canvas id="c-peak"></canvas></div><div class="chart-source">Source: <code>class_checkins.timestamp</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Sign-ups vs Churn</span></div><div class="chart-wrap"><canvas id="c-churn"></canvas></div><div class="chart-source">Source: <code>members</code></div></div>
+    </div>`;
+
+  const mm = DATA.monthly;
+  makeChart('c-rev', {type:'line', data:{labels: mm.map(r=>r.label), datasets:[{label:'Revenue', data: mm.map(r=>r.revenue), borderColor: GOLD, backgroundColor:'rgba(212,160,83,.1)', tension:.35, fill:true, pointRadius:3}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, ...nairaAxis()}}))});
+
+  makeChart('c-growth', {type:'line', data:{labels: mm.map(r=>r.label), datasets:[{label:'Total members', data: mm.map(r=>r.totalMembers), borderColor: BLUE, backgroundColor:'rgba(59,130,246,.12)', tension:.3, fill:true, pointRadius:3}]}, options: noLegend(baseOpts())});
+
+  const t = DATA.tiers;
+  makeChart('c-tiers', {type:'doughnut', data:{labels:['Monthly','Quarterly','Yearly'], datasets:[{data:[t.monthly.count,t.quarterly.count,t.yearly.count], backgroundColor:[BLUE,PURPLE,GOLD], borderWidth:0}]}, options: donutOpts()});
+
+  makeChart('c-peak', {type:'bar', data:{labels: DATA.peakHours.map(h=>h.hour), datasets:[{label:'Check-ins', data: DATA.peakHours.map(h=>h.count), backgroundColor: GOLD}]}, options: noLegend(baseOpts())});
+
+  makeChart('c-churn', {type:'bar', data:{labels: mm.map(r=>r.label), datasets:[{label:'Sign-ups', data: mm.map(r=>r.signups), backgroundColor: GREEN}, {label:'Churned', data: mm.map(r=>r.churned), backgroundColor: RED}]}, options: baseOpts()});
+}
+
+function renderMembers(){
+  const t = DATA.tiers;
+  const total = t.monthly.count + t.quarterly.count + t.yearly.count;
+  const monthlyValue = t.monthly.count * t.monthly.price + t.quarterly.count * (t.quarterly.price/3) + t.yearly.count * (t.yearly.price/12);
+
+  document.getElementById('dashboard-members').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Members</div><div class="kpi-value gold">${total}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Monthly Tier</div><div class="kpi-value" style="color:var(--blue)">${t.monthly.count}</div><div class="kpi-delta">${(t.monthly.count/total*100).toFixed(0)}% of base</div></div>
+      <div class="kpi-card"><div class="kpi-label">Quarterly Tier</div><div class="kpi-value" style="color:var(--purple)">${t.quarterly.count}</div><div class="kpi-delta">${(t.quarterly.count/total*100).toFixed(0)}% of base</div></div>
+      <div class="kpi-card"><div class="kpi-label">Yearly Tier</div><div class="kpi-value gold">${t.yearly.count}</div><div class="kpi-delta">${(t.yearly.count/total*100).toFixed(0)}% of base</div></div>
+      <div class="kpi-card"><div class="kpi-label">MRR (blended)</div><div class="kpi-value green">${N(Math.round(monthlyValue))}</div><div class="kpi-delta">Recurring per month</div></div>
+    </div>
+
+    <div class="section-heading">Recent Sign-ups</div>
+    <div class="chart-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Tier</th><th>Joined</th><th>Monthly Value</th><th>Status</th></tr></thead>
+        <tbody>${DATA.recentMembers.map(m => `
+          <tr><td style="color:var(--gold);font-family:var(--font-head)">${m.id}</td><td>${m.name}</td><td>${tierBadge(m.tier)}</td><td>${m.joined}</td><td>${N(m.monthly)}</td><td>${statusBadge(m.status)}</td></tr>
+        `).join('')}</tbody>
+      </table>
+    </div>`;
+}
+
+function renderClasses(){
+  const totalAttendance = DATA.classes.reduce((s,c) => s + c.attendance, 0);
+  const totalSessions = DATA.classes.reduce((s,c) => s + c.sessions, 0);
+  const avgAttendance = Math.round(totalAttendance / totalSessions);
+  const topClass = [...DATA.classes].sort((a,b) => b.attendance - a.attendance)[0];
+  const todayBooked = DATA.upcomingClasses.reduce((s,c) => s + c.booked, 0);
+  const todayCapacity = DATA.upcomingClasses.reduce((s,c) => s + c.capacity, 0);
+
+  document.getElementById('dashboard-classes').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Attendance</div><div class="kpi-value gold">${totalAttendance}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Sessions Run</div><div class="kpi-value">${totalSessions}</div><div class="kpi-delta">Across all classes</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg per Session</div><div class="kpi-value" style="color:var(--blue)">${avgAttendance}</div><div class="kpi-delta">Members per class</div></div>
+      <div class="kpi-card"><div class="kpi-label">Top Class</div><div class="kpi-value gold" style="font-size:20px">${topClass.name}</div><div class="kpi-delta">${topClass.attendance} total visits</div></div>
+      <div class="kpi-card"><div class="kpi-label">Today&rsquo;s Fill Rate</div><div class="kpi-value green">${Math.round(todayBooked/todayCapacity*100)}%</div><div class="kpi-delta">${todayBooked} / ${todayCapacity} slots</div></div>
+    </div>
+
+    <div class="section-heading">Class Performance</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Attendance by Class</span></div><div class="chart-wrap"><canvas id="c-class-att"></canvas></div><div class="chart-source">Source: <code>class_checkins</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Avg per Session</span></div><div class="chart-wrap"><canvas id="c-class-avg"></canvas></div><div class="chart-source">Source: <code>class_checkins / sessions</code></div></div>
+    </div>
+
+    <div class="section-heading">Today&rsquo;s Schedule</div>
+    <div class="chart-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>Time</th><th>Class</th><th>Trainer</th><th>Booked</th><th>Capacity</th><th>Fill</th></tr></thead>
+        <tbody>${DATA.upcomingClasses.map(c => {
+          const pct = Math.round(c.booked/c.capacity*100);
+          const pctColor = pct >= 90 ? 'var(--red)' : pct >= 70 ? 'var(--amber)' : 'var(--green)';
+          return `<tr><td>${c.time}</td><td><strong>${c.name}</strong></td><td>${c.trainer}</td><td>${c.booked}</td><td>${c.capacity}</td><td style="color:${pctColor};font-weight:600">${pct}%</td></tr>`;
+        }).join('')}</tbody>
+      </table>
+    </div>`;
+
+  const sorted = [...DATA.classes].sort((a,b) => b.attendance - a.attendance);
+  makeChart('c-class-att', {type:'bar', data:{labels: sorted.map(c=>c.name), datasets:[{label:'Attendance', data: sorted.map(c=>c.attendance), backgroundColor: GOLD}]}, options: noLegend({...baseOpts(), indexAxis:'y'})});
+  const sortedAvg = [...DATA.classes].sort((a,b) => b.avgPerSession - a.avgPerSession);
+  makeChart('c-class-avg', {type:'bar', data:{labels: sortedAvg.map(c=>c.name), datasets:[{label:'Avg per session', data: sortedAvg.map(c=>c.avgPerSession), backgroundColor: BLUE}]}, options: noLegend(baseOpts())});
+}
+
+function renderFinancials(){
+  const m = filteredMonthly();
+  const totalRev = m.reduce((s,r) => s + r.revenue, 0);
+  const avgMonth = Math.round(totalRev / Math.max(m.length, 1));
+  const t = DATA.tiers;
+  const revByTier = {
+    monthly: t.monthly.count * t.monthly.price,
+    quarterly: t.quarterly.count * (t.quarterly.price/3),
+    yearly: t.yearly.count * (t.yearly.price/12)
+  };
+  const mrr = revByTier.monthly + revByTier.quarterly + revByTier.yearly;
+  const arr = mrr * 12;
+
+  document.getElementById('dashboard-financials').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value green">${N(totalRev)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Monthly</div><div class="kpi-value gold">${N(avgMonth)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">MRR</div><div class="kpi-value green">${N(Math.round(mrr))}</div><div class="kpi-delta">Normalized recurring</div></div>
+      <div class="kpi-card"><div class="kpi-label">ARR</div><div class="kpi-value gold">${N(Math.round(arr))}</div><div class="kpi-delta">MRR &times; 12</div></div>
+      <div class="kpi-card"><div class="kpi-label">ARPU</div><div class="kpi-value">${N(Math.round(mrr / (t.monthly.count + t.quarterly.count + t.yearly.count)))}</div><div class="kpi-delta">Per active member</div></div>
+    </div>
+
+    <div class="section-heading">Revenue Breakdown</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Revenue by Month</span></div><div class="chart-wrap"><canvas id="c-fin-rev"></canvas></div><div class="chart-source">Source: <code>membership_payments</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">MRR by Tier</span></div><div class="chart-wrap"><canvas id="c-fin-mrr"></canvas></div><div class="chart-source">Source: <code>members.tier, tier.price</code></div></div>
+    </div>`;
+
+  const mm = DATA.monthly;
+  makeChart('c-fin-rev', {type:'bar', data:{labels: mm.map(r=>r.label), datasets:[{label:'Revenue', data: mm.map(r=>r.revenue), backgroundColor: GOLD}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, ...nairaAxis()}}))});
+  makeChart('c-fin-mrr', {type:'doughnut', data:{labels:['Monthly','Quarterly','Yearly'], datasets:[{data:[revByTier.monthly,revByTier.quarterly,revByTier.yearly], backgroundColor:[BLUE,PURPLE,GOLD], borderWidth:0}]}, options: donutOpts()});
+}
+
+function renderTrainers(){
+  const tr = DATA.trainers;
+  const totalSessions = tr.reduce((s,t) => s + t.sessions, 0);
+  const avgRating = (tr.reduce((s,t) => s + t.rating, 0) / tr.length).toFixed(2);
+  const avgRetention = Math.round(tr.reduce((s,t) => s + t.retentionRate, 0) / tr.length);
+  const topTrainer = [...tr].sort((a,b) => b.sessions - a.sessions)[0];
+
+  document.getElementById('dashboard-trainers').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Trainers</div><div class="kpi-value gold">${tr.length}</div><div class="kpi-delta">Active this month</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total Sessions</div><div class="kpi-value">${totalSessions}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Rating</div><div class="kpi-value green">${avgRating}</div><div class="kpi-delta">Out of 5.0</div></div>
+      <div class="kpi-card"><div class="kpi-label">Retention</div><div class="kpi-value gold">${avgRetention}%</div><div class="kpi-delta">Members retained 90 days</div></div>
+      <div class="kpi-card"><div class="kpi-label">Top Trainer</div><div class="kpi-value" style="font-size:17px">${topTrainer.name.split(' ')[0]}</div><div class="kpi-delta">${topTrainer.sessions} sessions</div></div>
+    </div>
+
+    <div class="section-heading">Trainer Performance</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Sessions per Trainer</span></div><div class="chart-wrap"><canvas id="c-tr-sessions"></canvas></div><div class="chart-source">Source: <code>classes.trainer_id</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Retention Rate (%)</span></div><div class="chart-wrap"><canvas id="c-tr-ret"></canvas></div><div class="chart-source">Source: <code>member_90d_active / member_joined</code></div></div>
+    </div>
+
+    <div class="section-heading">Staff Directory</div>
+    <div class="chart-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Specialty</th><th>Rating</th><th>Sessions</th><th>Members</th><th>Retention</th></tr></thead>
+        <tbody>${tr.map(t => `
+          <tr><td style="color:var(--gold);font-family:var(--font-head)">${t.id}</td><td>${t.name}</td><td>${t.specialty}</td><td>⭐ ${t.rating}</td><td>${t.sessions}</td><td>${t.members}</td><td style="color:${t.retentionRate >= 90 ? 'var(--green)' : 'var(--amber)'}">${t.retentionRate}%</td></tr>
+        `).join('')}</tbody>
+      </table>
+    </div>`;
+
+  const names = tr.map(t => t.name.split(' ')[0]);
+  makeChart('c-tr-sessions', {type:'bar', data:{labels: names, datasets:[{label:'Sessions', data: tr.map(t=>t.sessions), backgroundColor: GOLD}]}, options: noLegend(baseOpts())});
+  makeChart('c-tr-ret', {type:'bar', data:{labels: names, datasets:[{label:'Retention %', data: tr.map(t=>t.retentionRate), backgroundColor: tr.map(t => t.retentionRate >= 90 ? GREEN : AMBER)}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'}, min:0, max:100}}}))});
+}
+
+/* ══════════════════════════════════════════════════
+   TAB SWITCHING
+══════════════════════════════════════════════════ */
+function switchTab(name){
+  document.querySelectorAll('.dashboard').forEach(d => d.classList.remove('active'));
+  document.getElementById('dashboard-' + name).classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  const sidebarMap = { overview:0, members:1, classes:2, financials:3, trainers:4 };
+  const sidebarItems = document.querySelectorAll('.sidebar-item');
+  if (sidebarMap[name] !== undefined) sidebarItems[sidebarMap[name]].classList.add('active');
+  const titles = { overview:'Overview', members:'Members', classes:'Classes', financials:'Financials', trainers:'Trainers' };
+  document.getElementById('topbar-title').textContent = titles[name];
+  const mobileTitle = document.getElementById('mobile-topbar-title');
+  if (mobileTitle) mobileTitle.textContent = titles[name];
+  document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+  const nav = document.querySelector('.mobile-nav-item[data-tab="'+name+'"]');
+  if (nav) nav.classList.add('active');
+  // Close drawer on tab change
+  const drawer = document.getElementById('mobile-drawer');
+  if (drawer && drawer.classList.contains('open')) toggleDrawer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── Mobile drawer toggle ── */
+function toggleDrawer() {
+  document.getElementById('mobile-drawer').classList.toggle('open');
+  document.getElementById('mobile-drawer-backdrop').classList.toggle('open');
+}
+
+// Mobile filter bar mirrors desktop filters. Changes in either propagate to the other.
+function syncFiltersFromMobile(){
+  document.getElementById('year-filter').value  = document.getElementById('mobile-year-filter').value;
+  document.getElementById('month-filter').value = document.getElementById('mobile-month-filter').value;
+  renderAll();
+}
+function syncFiltersFromDesktop(){
+  const my = document.getElementById('mobile-year-filter');
+  const mm = document.getElementById('mobile-month-filter');
+  if (my) my.value = document.getElementById('year-filter').value;
+  if (mm) mm.value = document.getElementById('month-filter').value;
+  renderAll();
+}
+document.getElementById('year-filter').addEventListener('change', syncFiltersFromDesktop);
+document.getElementById('month-filter').addEventListener('change', syncFiltersFromDesktop);
+document.getElementById('mobile-year-filter').addEventListener('change', syncFiltersFromMobile);
+document.getElementById('mobile-month-filter').addEventListener('change', syncFiltersFromMobile);
+renderAll();
+</script>
+
+</body>
+</html>

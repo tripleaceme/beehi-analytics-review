@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48" href="/beehi-analytics-review/favicon.ico?v=3828d98af211" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/beehi-analytics-review/logo/favicon-32.png?v=4aa3d858a87f" />
+  <link rel="icon" type="image/svg+xml" sizes="any" href="/beehi-analytics-review/logo/favicon.svg?v=381987b5a167" />
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GlowAura Beauty — Salon Performance Tracker</title>
+  <meta name="description" content="Salon analytics dashboard for GlowAura Beauty, powered by BI Analytics Africa." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0f1e; --bg2: #0f172a; --surface: #1e293b; --surface2: #263348;
+      --border: #334155; --text: #f1f5f9; --muted: #94a3b8;
+      --gold: #d4a053; --gold-bright: #e8b866; --gold-dim: rgba(212,160,83,.10);
+      --green: #10b981; --blue: #3b82f6; --amber: #f59e0b; --red: #ef4444; --purple: #8b5cf6;
+      --font-head: 'Fira Code', monospace; --font-body: 'Fira Sans', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 15px; line-height: 1.6; }
+
+    .layout { display: flex; min-height: 100vh; }
+
+    .sidebar { width: 240px; flex-shrink: 0; background: var(--bg2); border-right: 1px solid var(--border); padding: 0 0 20px 0; display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-brand { padding: 0 20px; min-height: 72px; display: flex; flex-direction: column; justify-content: center; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    .sidebar-brand-name { font-family: var(--font-head); font-size: 17px; font-weight: 700; color: var(--gold); }
+    .sidebar-brand-tagline { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: .5px; text-transform: uppercase; }
+    .sidebar-section { padding: 16px 20px 6px; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .sidebar-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; font-size: 13px; color: var(--muted); cursor: pointer; border-left: 2px solid transparent; transition: all .15s; user-select: none; }
+    .sidebar-item:hover { background: var(--surface2); color: var(--text); }
+    .sidebar-item.active { background: var(--gold-dim); color: var(--gold); border-left-color: var(--gold); }
+    .sidebar-item svg { flex-shrink: 0; opacity: .8; }
+    .sidebar-spacer { flex: 1; }
+
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-x: hidden; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 0 28px; min-height: 72px; border-bottom: 1px solid var(--border); background: rgba(15,23,42,.7); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 10; }
+    .topbar-title { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--text); }
+    .topbar-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .badge { font-size: 11px; color: var(--green); background: rgba(16,185,129,.1); padding: 4px 10px; border-radius: 12px; font-weight: 500; }
+    .date-filter { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: var(--font-body); cursor: pointer; }
+
+    .content { padding: 24px 28px; }
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+
+    .kpi-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 18px; }
+    .kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; font-weight: 500; }
+    .kpi-value { font-family: var(--font-head); font-size: 26px; font-weight: 700; margin: 6px 0 2px; color: var(--text); }
+    .kpi-value.gold { color: var(--gold); }
+    .kpi-value.green { color: var(--green); }
+    .kpi-value.amber { color: var(--amber); }
+    .kpi-value.red { color: var(--red); }
+    .kpi-delta { font-size: 11px; color: var(--muted); }
+
+    .section-heading { font-family: var(--font-head); font-size: 13px; font-weight: 600; color: var(--gold); margin: 20px 0 10px; letter-spacing: .04em; }
+    .chart-row { display: grid; gap: 14px; margin-bottom: 16px; }
+    .chart-row.cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .chart-row.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; min-width: 0; overflow: hidden; }
+    .chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .chart-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .chart-wrap { position: relative; height: 220px; max-width: 100%; overflow: hidden; }
+    .chart-source { font-size: 10px; color: var(--muted); margin-top: 8px; font-family: var(--font-head); }
+    .chart-source code { background: var(--surface2); padding: 1px 4px; border-radius: 3px; font-size: 10px; }
+
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .data-table th { text-align: left; padding: 10px 12px; background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); }
+    .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .data-table tr:hover td { background: rgba(212,160,83,.04); }
+
+    .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .status-badge.completed { background: rgba(16,185,129,.15); color: var(--green); }
+    .status-badge.booked { background: rgba(59,130,246,.15); color: var(--blue); }
+    .status-badge.noshow { background: rgba(239,68,68,.15); color: var(--red); }
+    .status-badge.cancelled { background: rgba(245,158,11,.15); color: var(--amber); }
+    .status-badge.walkin { background: rgba(212,160,83,.15); color: var(--gold); }
+    .status-badge.whatsapp { background: rgba(16,185,129,.15); color: var(--green); }
+    .status-badge.instagram { background: rgba(139,92,246,.15); color: var(--purple); }
+    .status-badge.referral { background: rgba(59,130,246,.15); color: var(--blue); }
+
+        /* ── Mobile-only elements (hidden on desktop) ── */
+    .mobile-topbar { display: none; }
+    .mobile-bottom-nav { display: none; }
+    .mobile-drawer-backdrop { display: none; }
+    .mobile-drawer { display: none; }
+    .mobile-filter-bar { display: none; }
+
+    @media (max-width: 1024px) {
+      .kpi-row { grid-template-columns: repeat(3, 1fr); }
+      .chart-row.cols-3 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      /* Hide desktop elements */
+      .sidebar { display: none; }
+      .topbar { display: none; }
+
+      /* ── Mobile topbar (hamburger + title + badge + logout) ── */
+      .mobile-topbar {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 14px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: 0; z-index: 30;
+      }
+      .mobile-topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .mobile-hamburger {
+        background: none; border: none; color: var(--text);
+        padding: 4px; cursor: pointer; display: flex; flex-shrink: 0;
+      }
+      .mobile-topbar-title {
+        font-family: var(--font-head); font-size: 14px; font-weight: 600;
+        color: var(--gold); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      }
+      .mobile-topbar-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+      .mobile-badge {
+        background: var(--gold-dim); color: var(--gold);
+        border: 1px solid rgba(212,160,83,.3);
+        border-radius: 12px; padding: 2px 8px;
+        font-size: 9px; font-weight: 600;
+        white-space: nowrap;
+      }
+      .mobile-logout-btn {
+        background: var(--surface2); border: 1px solid var(--border);
+        color: var(--muted); border-radius: 6px;
+        padding: 6px 10px; font-size: 10px; text-decoration: none;
+        display: flex; align-items: center; gap: 4px;
+      }
+
+      /* ── Mobile filter bar (below topbar) ── */
+      .mobile-filter-bar {
+        display: flex; gap: 8px;
+        padding: 10px 16px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: 57px; z-index: 25;
+      }
+      .mobile-filter-bar select {
+        flex: 1; background: var(--surface2); border: 1px solid var(--border);
+        color: var(--text); border-radius: 6px; padding: 6px 10px;
+        font-family: var(--font-body); font-size: 12px;
+      }
+
+      /* ── Mobile bottom tab bar ── */
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding: 8px 4px; padding-bottom: calc(8px + env(safe-area-inset-bottom));
+        z-index: 30;
+        box-shadow: 0 -4px 20px rgba(0,0,0,.3);
+      }
+      .mobile-nav-item {
+        flex: 1; min-width: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center;
+        gap: 4px; padding: 6px 2px;
+        background: none; border: none;
+        color: var(--muted); cursor: pointer;
+        font-family: var(--font-body); font-size: 9px;
+        transition: color .15s;
+        overflow: hidden; white-space: nowrap;
+      }
+      .mobile-nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+      .mobile-nav-item.active { color: var(--gold); }
+
+      /* ── Mobile drawer (slide-out side panel) ── */
+      .mobile-drawer-backdrop {
+        display: block;
+        position: fixed; inset: 0;
+        background: rgba(0,0,0,.6);
+        opacity: 0; pointer-events: none;
+        transition: opacity .3s;
+        z-index: 40;
+      }
+      .mobile-drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+      .mobile-drawer {
+        display: flex; flex-direction: column;
+        position: fixed; top: 0; left: 0; bottom: 0;
+        width: 80%; max-width: 300px;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform .3s ease;
+        overflow-y: auto;
+      }
+      .mobile-drawer.open { transform: translateX(0); }
+      .mobile-drawer-header {
+        padding: 20px; border-bottom: 1px solid var(--border);
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .mobile-drawer-brand {
+        font-family: var(--font-head); font-size: 15px; font-weight: 700;
+        color: var(--gold);
+      }
+      .mobile-drawer-brand span { display: block; font-size: 10px; color: var(--muted); font-weight: 400; margin-top: 2px; text-transform: uppercase; letter-spacing: .5px; }
+      .mobile-drawer-close {
+        background: none; border: none; color: var(--muted); cursor: pointer;
+      }
+      .mobile-drawer-section {
+        padding: 12px 20px 6px;
+        font-size: 10px; font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase; letter-spacing: .08em;
+      }
+      .mobile-drawer-item {
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 20px;
+        color: var(--muted); text-decoration: none;
+        font-size: 14px; font-weight: 500;
+        border: none; background: none; width: 100%; text-align: left;
+        font-family: var(--font-body); cursor: pointer;
+      }
+      .mobile-drawer-item:hover { background: var(--surface2); color: var(--text); }
+      .mobile-drawer-item svg { flex-shrink: 0; }
+
+      /* ── Content adjustments ── */
+      .kpi-row { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .kpi-card { padding: 14px; }
+      .kpi-value { font-size: 20px; }
+      .kpi-label { font-size: 10px; }
+      .kpi-delta { font-size: 10px; }
+      .chart-row.cols-2, .chart-row.cols-3 { grid-template-columns: 1fr; }
+      .content { padding: 16px 12px 100px 12px; }
+      .section-heading { font-size: 10px; }
+      .chart-card { padding: 14px; }
+      .chart-title { font-size: 12px; }
+      .data-table { font-size: 11px; }
+      .data-table th, .data-table td { padding: 8px; }
+    }
+  </style>
+<meta name="robots" content="noindex, nofollow">
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ── Mobile Drawer Backdrop ── -->
+  <div class="mobile-drawer-backdrop" id="mobile-drawer-backdrop" onclick="toggleDrawer()"></div>
+
+  <!-- ── Mobile Drawer (slide-out side panel) ── -->
+  <aside class="mobile-drawer" id="mobile-drawer">
+    <div class="mobile-drawer-header">
+      <div class="mobile-drawer-brand">
+        GlowAura Beauty
+        <span>Salon Performance Tracker</span>
+      </div>
+      <button class="mobile-drawer-close" onclick="toggleDrawer()" aria-label="Close menu">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/beehi-analytics-review/><line x1="6" y1="6" x2="18" y2="18"/beehi-analytics-review/></svg>
+      </button>
+    </div>
+
+    <div class="mobile-drawer-section">Dashboards</div>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('overview');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>
+      Overview
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('appointments');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/beehi-analytics-review/><line x1="16" y1="2" x2="16" y2="6"/beehi-analytics-review/><line x1="8" y1="2" x2="8" y2="6"/beehi-analytics-review/><line x1="3" y1="10" x2="21" y2="10"/beehi-analytics-review/></svg>
+      Appointments
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('services');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/beehi-analytics-review/></svg>
+      Services
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('financials');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>
+      Financials
+    </a>
+    <a class="mobile-drawer-item" href="#" onclick="event.preventDefault();switchTab('stylists');toggleDrawer();">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/beehi-analytics-review/><circle cx="9" cy="7" r="4"/beehi-analytics-review/></svg>
+      Stylists
+    </a>
+
+    <div style="flex:1"></div>
+
+    <a class="mobile-drawer-item" href="/beehi-analytics-review/samples.html" style="border-top:1px solid var(--border);color:var(--red)">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/beehi-analytics-review/><polyline points="16 17 21 12 16 7"/beehi-analytics-review/><line x1="21" y1="12" x2="9" y2="12"/beehi-analytics-review/></svg>
+      Logout
+    </a>
+  </aside>
+
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-name">GlowAura Beauty</div>
+      <div class="sidebar-brand-tagline">Salon Performance Tracker</div>
+    </div>
+
+    <div class="sidebar-section">Dashboards</div>
+    <div class="sidebar-item active" onclick="switchTab('overview')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>
+      Overview
+    </div>
+    <div class="sidebar-item" onclick="switchTab('appointments')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/beehi-analytics-review/><line x1="16" y1="2" x2="16" y2="6"/beehi-analytics-review/><line x1="8" y1="2" x2="8" y2="6"/beehi-analytics-review/><line x1="3" y1="10" x2="21" y2="10"/beehi-analytics-review/></svg>
+      Appointments
+    </div>
+    <div class="sidebar-item" onclick="switchTab('services')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/beehi-analytics-review/></svg>
+      Services
+    </div>
+    <div class="sidebar-item" onclick="switchTab('financials')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>
+      Financials
+    </div>
+    <div class="sidebar-item" onclick="switchTab('stylists')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/beehi-analytics-review/><circle cx="9" cy="7" r="4"/beehi-analytics-review/></svg>
+      Stylists
+    </div>
+
+    <div class="sidebar-spacer"></div>
+    <a class="sidebar-item" href="/beehi-analytics-review/samples.html" style="text-decoration:none;border-top:1px solid var(--border);padding-top:12px;color:var(--red)">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/beehi-analytics-review/><polyline points="16 17 21 12 16 7"/beehi-analytics-review/><line x1="21" y1="12" x2="9" y2="12"/beehi-analytics-review/></svg>
+      Logout
+    </a>
+  </aside>
+
+  <div class="main">
+    
+
+    <!-- ── Mobile Topbar (visible only on mobile) ── -->
+    <header class="mobile-topbar">
+      <div class="mobile-topbar-left">
+        <button class="mobile-hamburger" onclick="toggleDrawer()" aria-label="Open menu">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/beehi-analytics-review/><line x1="3" y1="6" x2="21" y2="6"/beehi-analytics-review/><line x1="3" y1="18" x2="21" y2="18"/beehi-analytics-review/></svg>
+        </button>
+        <div class="mobile-topbar-title" id="mobile-topbar-title">Overview</div>
+      </div>
+      <div class="mobile-topbar-right">
+        <span class="mobile-badge">Live &middot; Demo</span>
+        <a class="mobile-logout-btn" href="/beehi-analytics-review/samples.html" aria-label="Logout">Logout</a>
+      </div>
+    </header>
+
+    <!-- ── Mobile Filter Bar ── -->
+    <div class="mobile-filter-bar">
+      <select id="mobile-year-filter" aria-label="Year">
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026" selected>2026</option>
+      </select>
+      <select id="mobile-month-filter" aria-label="Month">
+        <option value="all">All months</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4" selected>April</option>
+      </select>
+    </div>
+
+    <!-- Desktop Topbar -->
+    <header class="topbar">
+      <div class="topbar-title" id="topbar-title">Overview</div>
+      <div class="topbar-right">
+        <span class="badge">Data refreshed: Apr 11, 2026 · 7:45 AM</span>
+        <select class="date-filter" id="year-filter" aria-label="Year filter">
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+          <option value="2026" selected>2026</option>
+        </select>
+        <select class="date-filter" id="month-filter">
+          <option value="all">All months</option>
+          <option value="1">January</option>
+          <option value="2">February</option>
+          <option value="3">March</option>
+          <option value="4" selected>April</option>
+        </select>
+      </div>
+    </header>
+
+    <div class="content">
+      <div class="dashboard active" id="dashboard-overview"></div>
+      <div class="dashboard" id="dashboard-appointments"></div>
+      <div class="dashboard" id="dashboard-services"></div>
+      <div class="dashboard" id="dashboard-financials"></div>
+      <div class="dashboard" id="dashboard-stylists"></div>
+    </div>
+  </div>
+</div>
+
+<nav class="mobile-bottom-nav">
+  <button class="mobile-nav-item active" data-tab="overview" onclick="switchTab('overview')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 3v18h18"/beehi-analytics-review/><path d="M7 16l4-4 4 4 5-5"/beehi-analytics-review/></svg>Overview
+  </button>
+  <button class="mobile-nav-item" data-tab="appointments" onclick="switchTab('appointments')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/beehi-analytics-review/><line x1="3" y1="10" x2="21" y2="10"/beehi-analytics-review/></svg>Bookings
+  </button>
+  <button class="mobile-nav-item" data-tab="services" onclick="switchTab('services')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3 6 6 1-4.5 4.5L18 20l-6-3-6 3 1.5-6.5L3 9l6-1z"/beehi-analytics-review/></svg>Services
+  </button>
+  <button class="mobile-nav-item" data-tab="stylists" onclick="switchTab('stylists')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/beehi-analytics-review/><circle cx="9" cy="7" r="4"/beehi-analytics-review/></svg>Stylists
+  </button>
+  <button class="mobile-nav-item" data-tab="financials" onclick="switchTab('financials')">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/beehi-analytics-review/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/beehi-analytics-review/></svg>Revenue
+  </button>
+
+</nav>
+
+<script>
+const DATA = {
+  kpis: {
+    appointmentsThisMonth: 124,
+    monthlyRevenue: 2410000,
+    noShowRate: 7.8,
+    repeatClientRate: 62,
+    avgTicket: 19400
+  },
+  monthly: [
+    { month: 1, label: 'Jan', revenue: 1820000, appointments: 96,  noShows: 10, newClients: 28, repeatClients: 58 },
+    { month: 2, label: 'Feb', revenue: 1960000, appointments: 104, noShows: 9,  newClients: 31, repeatClients: 64 },
+    { month: 3, label: 'Mar', revenue: 2180000, appointments: 115, noShows: 8,  newClients: 34, repeatClients: 73 },
+    { month: 4, label: 'Apr', revenue: 2410000, appointments: 124, noShows: 10, newClients: 38, repeatClients: 78 }
+  ],
+  services: [
+    { name: 'Braids',        price: 15000, bookings: 82, color: '#d4a053' },
+    { name: 'Wig Install',   price: 25000, bookings: 54, color: '#8b5cf6' },
+    { name: 'Manicure',      price: 5000,  bookings: 71, color: '#3b82f6' },
+    { name: 'Pedicure',      price: 7000,  bookings: 58, color: '#10b981' },
+    { name: 'Facial',        price: 12000, bookings: 46, color: '#f59e0b' },
+    { name: 'Makeup',        price: 20000, bookings: 38, color: '#ef4444' },
+    { name: 'Hair Cut',      price: 4000,  bookings: 62, color: '#e8b866' },
+    { name: 'Gel Polish',    price: 8000,  bookings: 48, color: '#64748b' }
+  ],
+  peakHours: [
+    { hour: '9 AM',  count: 18 },
+    { hour: '10 AM', count: 32 },
+    { hour: '11 AM', count: 41 },
+    { hour: '12 PM', count: 46 },
+    { hour: '1 PM',  count: 38 },
+    { hour: '2 PM',  count: 34 },
+    { hour: '3 PM',  count: 42 },
+    { hour: '4 PM',  count: 58 },
+    { hour: '5 PM',  count: 72 },
+    { hour: '6 PM',  count: 64 },
+    { hour: '7 PM',  count: 36 }
+  ],
+  sources: {
+    walkin:    { count: 34, label: 'Walk-in' },
+    whatsapp:  { count: 48, label: 'WhatsApp' },
+    instagram: { count: 28, label: 'Instagram' },
+    referral:  { count: 14, label: 'Referral' }
+  },
+  stylists: [
+    { id: 'S01', name: 'Chioma Okafor',   specialty: 'Braids, Wigs',       rating: 4.9, appointments: 38, clients: 42, repeatRate: 72 },
+    { id: 'S02', name: 'Funmi Bakare',    specialty: 'Makeup, Facial',     rating: 4.8, appointments: 32, clients: 36, repeatRate: 68 },
+    { id: 'S03', name: 'Amarachi Obi',    specialty: 'Manicure, Pedicure', rating: 4.7, appointments: 29, clients: 33, repeatRate: 64 },
+    { id: 'S04', name: 'Rukayat Salami',  specialty: 'Hair Cut, Styling',  rating: 4.8, appointments: 18, clients: 24, repeatRate: 58 },
+    { id: 'S05', name: 'Tomi Adeosun',    specialty: 'Gel Polish, Nails',  rating: 4.6, appointments: 16, clients: 22, repeatRate: 52 }
+  ],
+  recentAppointments: [
+    { id: 'A1124', client: 'Adesuwa Eghosa',   service: 'Wig Install',  stylist: 'Chioma Okafor',  date: '2026-04-11', total: 25000, source: 'whatsapp',  status: 'completed' },
+    { id: 'A1123', client: 'Yetunde Ogunbiyi', service: 'Braids',       stylist: 'Chioma Okafor',  date: '2026-04-11', total: 15000, source: 'instagram', status: 'completed' },
+    { id: 'A1122', client: 'Blessing Nwachukwu',service: 'Makeup',      stylist: 'Funmi Bakare',   date: '2026-04-11', total: 20000, source: 'referral',  status: 'booked' },
+    { id: 'A1121', client: 'Halima Usman',     service: 'Pedicure',     stylist: 'Amarachi Obi',   date: '2026-04-10', total: 7000,  source: 'walkin',    status: 'completed' },
+    { id: 'A1120', client: 'Chinyere Ude',     service: 'Facial',       stylist: 'Funmi Bakare',   date: '2026-04-10', total: 12000, source: 'whatsapp',  status: 'completed' },
+    { id: 'A1119', client: 'Funke Adeleke',    service: 'Gel Polish',   stylist: 'Tomi Adeosun',   date: '2026-04-10', total: 8000,  source: 'instagram', status: 'noshow' },
+    { id: 'A1118', client: 'Aisha Bello',      service: 'Braids',       stylist: 'Chioma Okafor',  date: '2026-04-09', total: 15000, source: 'referral',  status: 'completed' },
+    { id: 'A1117', client: 'Kehinde Oluwole',  service: 'Hair Cut',     stylist: 'Rukayat Salami', date: '2026-04-09', total: 4000,  source: 'walkin',    status: 'completed' },
+    { id: 'A1116', client: 'Ngozi Eze',        service: 'Manicure',     stylist: 'Amarachi Obi',   date: '2026-04-09', total: 5000,  source: 'whatsapp',  status: 'completed' },
+    { id: 'A1115', client: 'Tolulope Adewale', service: 'Wig Install',  stylist: 'Chioma Okafor',  date: '2026-04-08', total: 25000, source: 'whatsapp',  status: 'completed' },
+    { id: 'A1114', client: 'Zainab Muhammad',  service: 'Facial',       stylist: 'Funmi Bakare',   date: '2026-04-08', total: 12000, source: 'instagram', status: 'cancelled' },
+    { id: 'A1113', client: 'Oluchi Nnamdi',    service: 'Makeup',       stylist: 'Funmi Bakare',   date: '2026-04-08', total: 20000, source: 'referral',  status: 'completed' }
+  ],
+  productVsService: { service: 2180000, product: 230000 }
+};
+
+const GRID = 'rgba(51,65,85,.5)', TICK = '#94a3b8', GOLD = '#d4a053', GREEN = '#10b981', BLUE = '#3b82f6', AMBER = '#f59e0b', RED = '#ef4444', PURPLE = '#8b5cf6';
+Chart.defaults.color = TICK;
+Chart.defaults.font.family = "'Fira Sans', sans-serif";
+Chart.defaults.font.size = 11;
+const N = v => '\u20A6' + Number(v).toLocaleString();
+const shortN = v => '\u20A6' + (v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'k' : v);
+function baseOpts(extra = {}) {
+  return { responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{labels:{boxWidth:10,padding:12,font:{size:11}}}, tooltip:{backgroundColor:'#0f172a',borderColor:'#334155',borderWidth:1,padding:10} },
+    scales:{ x:{grid:{color:GRID},ticks:{color:TICK}}, y:{grid:{color:GRID},ticks:{color:TICK}} }, ...extra };
+}
+function noLegend(o){ o.plugins.legend.display=false; return o; }
+function donutOpts(){ return {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:10,padding:10,font:{size:11}}},tooltip:{backgroundColor:'#0f172a',borderColor:'#334155',borderWidth:1}}}; }
+function nairaAxis(){ return { y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>shortN(v)}} }; }
+const charts = {};
+function makeChart(id, cfg){ if(charts[id]){ charts[id].destroy(); } const el=document.getElementById(id); if(!el) return; charts[id]=new Chart(el, cfg); }
+function statusBadge(s){ return `<span class="status-badge ${s}">${s}</span>`; }
+function sourceBadge(s){ return `<span class="status-badge ${s}">${s}</span>`; }
+
+function getYearFilter(){ return parseInt(document.getElementById('year-filter').value); }
+function getMonthFilter(){ const v = document.getElementById('month-filter').value; return v === 'all' ? null : parseInt(v); }
+// Demo data is Jan–Apr 2026 only. Selecting a year without data yields an empty filtered set.
+function filteredMonthly(){
+  if (getYearFilter() !== 2026) return [];
+  const m = getMonthFilter();
+  return m ? DATA.monthly.filter(r => r.month === m) : DATA.monthly;
+}
+
+function renderAll(){
+  renderOverview();
+  renderAppointments();
+  renderServices();
+  renderFinancials();
+  renderStylists();
+}
+
+function renderOverview(){
+  const k = DATA.kpis;
+  const m = filteredMonthly();
+  const revFiltered = m.reduce((s,r) => s + r.revenue, 0);
+  const apptFiltered = m.reduce((s,r) => s + r.appointments, 0);
+
+  document.getElementById('dashboard-overview').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Appointments</div><div class="kpi-value gold">${apptFiltered}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Revenue</div><div class="kpi-value green">${N(revFiltered)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">No-show Rate</div><div class="kpi-value amber">${k.noShowRate}%</div><div class="kpi-delta">Across Jan&ndash;Apr</div></div>
+      <div class="kpi-card"><div class="kpi-label">Repeat Clients</div><div class="kpi-value">${k.repeatClientRate}%</div><div class="kpi-delta">Booked 2+ times</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Ticket</div><div class="kpi-value green">${N(k.avgTicket)}</div><div class="kpi-delta">Per appointment</div></div>
+    </div>
+
+    <div class="section-heading">Revenue &amp; Bookings</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Monthly Revenue</span></div><div class="chart-wrap"><canvas id="c-rev"></canvas></div><div class="chart-source">Source: <code>appointments.total_paid</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Appointments Trend</span></div><div class="chart-wrap"><canvas id="c-appt"></canvas></div><div class="chart-source">Source: <code>appointments.booked_at</code></div></div>
+    </div>
+
+    <div class="section-heading">Operations</div>
+    <div class="chart-row cols-3">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Service Mix</span></div><div class="chart-wrap"><canvas id="c-mix"></canvas></div><div class="chart-source">Source: <code>appointments.service_id</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Peak Booking Hours</span></div><div class="chart-wrap"><canvas id="c-peak"></canvas></div><div class="chart-source">Source: <code>appointments.start_time</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Booking Sources</span></div><div class="chart-wrap"><canvas id="c-src"></canvas></div><div class="chart-source">Source: <code>appointments.booking_channel</code></div></div>
+    </div>`;
+
+  const mm = DATA.monthly;
+  makeChart('c-rev', {type:'line', data:{labels: mm.map(r=>r.label), datasets:[{label:'Revenue', data: mm.map(r=>r.revenue), borderColor: GOLD, backgroundColor:'rgba(212,160,83,.1)', tension:.35, fill:true, pointRadius:3}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, ...nairaAxis()}}))});
+  makeChart('c-appt', {type:'line', data:{labels: mm.map(r=>r.label), datasets:[{label:'Appointments', data: mm.map(r=>r.appointments), borderColor: BLUE, backgroundColor:'rgba(59,130,246,.12)', tension:.3, fill:true, pointRadius:3}]}, options: noLegend(baseOpts())});
+  const svc = DATA.services;
+  makeChart('c-mix', {type:'doughnut', data:{labels: svc.map(s=>s.name), datasets:[{data: svc.map(s=>s.bookings), backgroundColor: svc.map(s=>s.color), borderWidth:0}]}, options: donutOpts()});
+  makeChart('c-peak', {type:'bar', data:{labels: DATA.peakHours.map(h=>h.hour), datasets:[{label:'Appointments', data: DATA.peakHours.map(h=>h.count), backgroundColor: GOLD}]}, options: noLegend(baseOpts())});
+  const sr = DATA.sources;
+  makeChart('c-src', {type:'doughnut', data:{labels:[sr.walkin.label, sr.whatsapp.label, sr.instagram.label, sr.referral.label], datasets:[{data:[sr.walkin.count, sr.whatsapp.count, sr.instagram.count, sr.referral.count], backgroundColor:[GOLD, GREEN, PURPLE, BLUE], borderWidth:0}]}, options: donutOpts()});
+}
+
+function renderAppointments(){
+  const m = filteredMonthly();
+  const apptFiltered = m.reduce((s,r) => s + r.appointments, 0);
+  const noShowFiltered = m.reduce((s,r) => s + r.noShows, 0);
+  const newFiltered = m.reduce((s,r) => s + r.newClients, 0);
+  const repeatFiltered = m.reduce((s,r) => s + r.repeatClients, 0);
+
+  document.getElementById('dashboard-appointments').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Bookings</div><div class="kpi-value gold">${apptFiltered}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">New Clients</div><div class="kpi-value green">${newFiltered}</div><div class="kpi-delta">First-time visits</div></div>
+      <div class="kpi-card"><div class="kpi-label">Repeat Clients</div><div class="kpi-value" style="color:var(--blue)">${repeatFiltered}</div><div class="kpi-delta">Returning</div></div>
+      <div class="kpi-card"><div class="kpi-label">No-shows</div><div class="kpi-value amber">${noShowFiltered}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Cancellations</div><div class="kpi-value red">6</div><div class="kpi-delta">Client-cancelled</div></div>
+    </div>
+
+    <div class="section-heading">Booking Flow</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">New vs Repeat Clients</span></div><div class="chart-wrap"><canvas id="c-nvr"></canvas></div><div class="chart-source">Source: <code>clients.first_visit_at</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Booking Source Trend</span></div><div class="chart-wrap"><canvas id="c-src2"></canvas></div><div class="chart-source">Source: <code>appointments.booking_channel</code></div></div>
+    </div>
+
+    <div class="section-heading">Recent Appointments</div>
+    <div class="chart-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Client</th><th>Service</th><th>Stylist</th><th>Date</th><th>Total</th><th>Source</th><th>Status</th></tr></thead>
+        <tbody>${DATA.recentAppointments.map(a => `
+          <tr><td style="color:var(--gold);font-family:var(--font-head)">${a.id}</td><td>${a.client}</td><td>${a.service}</td><td>${a.stylist}</td><td>${a.date}</td><td>${N(a.total)}</td><td>${sourceBadge(a.source)}</td><td>${statusBadge(a.status)}</td></tr>
+        `).join('')}</tbody>
+      </table>
+    </div>`;
+
+  const mm = DATA.monthly;
+  makeChart('c-nvr', {type:'bar', data:{labels: mm.map(r=>r.label), datasets:[{label:'New', data: mm.map(r=>r.newClients), backgroundColor: GREEN}, {label:'Repeat', data: mm.map(r=>r.repeatClients), backgroundColor: BLUE}]}, options: baseOpts()});
+  const sr = DATA.sources;
+  makeChart('c-src2', {type:'bar', data:{labels:[sr.walkin.label, sr.whatsapp.label, sr.instagram.label, sr.referral.label], datasets:[{label:'Bookings', data:[sr.walkin.count, sr.whatsapp.count, sr.instagram.count, sr.referral.count], backgroundColor:[GOLD, GREEN, PURPLE, BLUE]}]}, options: noLegend(baseOpts())});
+}
+
+function renderServices(){
+  const svc = DATA.services;
+  const totalBookings = svc.reduce((s,v) => s + v.bookings, 0);
+  const totalRev = svc.reduce((s,v) => s + v.bookings * v.price, 0);
+  const top = [...svc].sort((a,b) => (b.bookings*b.price) - (a.bookings*a.price))[0];
+  const pvs = DATA.productVsService;
+
+  document.getElementById('dashboard-services').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Services Offered</div><div class="kpi-value gold">${svc.length}</div><div class="kpi-delta">Active menu</div></div>
+      <div class="kpi-card"><div class="kpi-label">Total Bookings</div><div class="kpi-value">${totalBookings}</div><div class="kpi-delta">Across services</div></div>
+      <div class="kpi-card"><div class="kpi-label">Service Revenue</div><div class="kpi-value green">${N(totalRev)}</div><div class="kpi-delta">Jan&ndash;Apr total</div></div>
+      <div class="kpi-card"><div class="kpi-label">Top Earner</div><div class="kpi-value gold" style="font-size:17px">${top.name}</div><div class="kpi-delta">${N(top.bookings*top.price)}</div></div>
+      <div class="kpi-card"><div class="kpi-label">Product Sales</div><div class="kpi-value" style="color:var(--purple)">${N(pvs.product)}</div><div class="kpi-delta">Retail add-on</div></div>
+    </div>
+
+    <div class="section-heading">Service Performance</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Bookings by Service</span></div><div class="chart-wrap"><canvas id="c-svc-b"></canvas></div><div class="chart-source">Source: <code>appointments.service_id</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Revenue by Service</span></div><div class="chart-wrap"><canvas id="c-svc-r"></canvas></div><div class="chart-source">Source: <code>services.price, appointments</code></div></div>
+    </div>
+
+    <div class="section-heading">Service vs Product Split</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Revenue Split</span></div><div class="chart-wrap"><canvas id="c-pvs"></canvas></div><div class="chart-source">Source: <code>revenue_lines.type</code></div></div>
+      <div class="chart-card" style="overflow-x:auto"><div class="chart-header"><span class="chart-title">Service Menu</span></div>
+        <table class="data-table">
+          <thead><tr><th>Service</th><th>Price</th><th>Bookings</th><th>Revenue</th></tr></thead>
+          <tbody>${svc.map(s => `<tr><td><strong>${s.name}</strong></td><td>${N(s.price)}</td><td>${s.bookings}</td><td style="color:var(--gold)">${N(s.price*s.bookings)}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+
+  const sortedB = [...svc].sort((a,b) => b.bookings - a.bookings);
+  makeChart('c-svc-b', {type:'bar', data:{labels: sortedB.map(s=>s.name), datasets:[{label:'Bookings', data: sortedB.map(s=>s.bookings), backgroundColor: GOLD}]}, options: noLegend({...baseOpts(), indexAxis:'y'})});
+  const sortedR = [...svc].sort((a,b) => (b.bookings*b.price) - (a.bookings*a.price));
+  makeChart('c-svc-r', {type:'bar', data:{labels: sortedR.map(s=>s.name), datasets:[{label:'Revenue', data: sortedR.map(s=>s.bookings*s.price), backgroundColor: GREEN}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, ...nairaAxis()}}))});
+  makeChart('c-pvs', {type:'doughnut', data:{labels:['Service revenue','Product sales'], datasets:[{data:[pvs.service, pvs.product], backgroundColor:[GOLD, PURPLE], borderWidth:0}]}, options: donutOpts()});
+}
+
+function renderFinancials(){
+  const m = filteredMonthly();
+  const totalRev = m.reduce((s,r) => s + r.revenue, 0);
+  const avgMonth = Math.round(totalRev / Math.max(m.length, 1));
+  const totalAppt = m.reduce((s,r) => s + r.appointments, 0);
+  const avgTicket = totalAppt ? Math.round(totalRev / totalAppt) : 0;
+  const svc = DATA.services;
+  const svcRev = svc.reduce((s,v) => s + v.bookings * v.price, 0);
+
+  document.getElementById('dashboard-financials').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value green">${N(totalRev)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Monthly</div><div class="kpi-value gold">${N(avgMonth)}</div><div class="kpi-delta">Filtered period</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Ticket</div><div class="kpi-value">${N(avgTicket)}</div><div class="kpi-delta">Per appointment</div></div>
+      <div class="kpi-card"><div class="kpi-label">Service Revenue</div><div class="kpi-value gold">${N(svcRev)}</div><div class="kpi-delta">Jan&ndash;Apr total</div></div>
+      <div class="kpi-card"><div class="kpi-label">Product Sales</div><div class="kpi-value" style="color:var(--purple)">${N(DATA.productVsService.product)}</div><div class="kpi-delta">Retail</div></div>
+    </div>
+
+    <div class="section-heading">Revenue Breakdown</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Revenue by Month</span></div><div class="chart-wrap"><canvas id="c-fin-rev"></canvas></div><div class="chart-source">Source: <code>appointments.total_paid</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Revenue by Stylist</span></div><div class="chart-wrap"><canvas id="c-fin-st"></canvas></div><div class="chart-source">Source: <code>appointments.stylist_id</code></div></div>
+    </div>`;
+
+  const mm = DATA.monthly;
+  makeChart('c-fin-rev', {type:'bar', data:{labels: mm.map(r=>r.label), datasets:[{label:'Revenue', data: mm.map(r=>r.revenue), backgroundColor: GOLD}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, ...nairaAxis()}}))});
+  const st = DATA.stylists;
+  const stRev = st.map(s => ({ name: s.name.split(' ')[0], rev: Math.round(s.appointments * 18500 * (s.rating / 4.8)) }));
+  makeChart('c-fin-st', {type:'bar', data:{labels: stRev.map(s=>s.name), datasets:[{label:'Revenue', data: stRev.map(s=>s.rev), backgroundColor: GREEN}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, ...nairaAxis()}}))});
+}
+
+function renderStylists(){
+  const st = DATA.stylists;
+  const totalAppt = st.reduce((s,t) => s + t.appointments, 0);
+  const avgRating = (st.reduce((s,t) => s + t.rating, 0) / st.length).toFixed(2);
+  const avgRepeat = Math.round(st.reduce((s,t) => s + t.repeatRate, 0) / st.length);
+  const top = [...st].sort((a,b) => b.appointments - a.appointments)[0];
+
+  document.getElementById('dashboard-stylists').innerHTML = `
+    <div class="kpi-row">
+      <div class="kpi-card"><div class="kpi-label">Stylists</div><div class="kpi-value gold">${st.length}</div><div class="kpi-delta">Active</div></div>
+      <div class="kpi-card"><div class="kpi-label">Appointments</div><div class="kpi-value">${totalAppt}</div><div class="kpi-delta">This month</div></div>
+      <div class="kpi-card"><div class="kpi-label">Avg Rating</div><div class="kpi-value green">${avgRating}</div><div class="kpi-delta">Out of 5.0</div></div>
+      <div class="kpi-card"><div class="kpi-label">Repeat Rate</div><div class="kpi-value gold">${avgRepeat}%</div><div class="kpi-delta">Avg across team</div></div>
+      <div class="kpi-card"><div class="kpi-label">Top Stylist</div><div class="kpi-value" style="font-size:17px">${top.name.split(' ')[0]}</div><div class="kpi-delta">${top.appointments} appts</div></div>
+    </div>
+
+    <div class="section-heading">Stylist Performance</div>
+    <div class="chart-row cols-2">
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Appointments per Stylist</span></div><div class="chart-wrap"><canvas id="c-st-a"></canvas></div><div class="chart-source">Source: <code>appointments.stylist_id</code></div></div>
+      <div class="chart-card"><div class="chart-header"><span class="chart-title">Repeat-Client Rate</span></div><div class="chart-wrap"><canvas id="c-st-r"></canvas></div><div class="chart-source">Source: <code>clients.return_visits</code></div></div>
+    </div>
+
+    <div class="section-heading">Staff Directory</div>
+    <div class="chart-card" style="overflow-x:auto">
+      <table class="data-table">
+        <thead><tr><th>ID</th><th>Name</th><th>Specialty</th><th>Rating</th><th>Appts</th><th>Clients</th><th>Repeat %</th></tr></thead>
+        <tbody>${st.map(t => `
+          <tr><td style="color:var(--gold);font-family:var(--font-head)">${t.id}</td><td>${t.name}</td><td>${t.specialty}</td><td>⭐ ${t.rating}</td><td>${t.appointments}</td><td>${t.clients}</td><td style="color:${t.repeatRate >= 65 ? 'var(--green)' : 'var(--amber)'}">${t.repeatRate}%</td></tr>
+        `).join('')}</tbody>
+      </table>
+    </div>`;
+
+  const names = st.map(t => t.name.split(' ')[0]);
+  makeChart('c-st-a', {type:'bar', data:{labels: names, datasets:[{label:'Appointments', data: st.map(t=>t.appointments), backgroundColor: GOLD}]}, options: noLegend(baseOpts())});
+  makeChart('c-st-r', {type:'bar', data:{labels: names, datasets:[{label:'Repeat %', data: st.map(t=>t.repeatRate), backgroundColor: st.map(t => t.repeatRate >= 65 ? GREEN : AMBER)}]}, options: noLegend(baseOpts({scales:{x:{grid:{color:GRID},ticks:{color:TICK}}, y:{grid:{color:GRID},ticks:{color:TICK,callback:v=>v+'%'}, min:0, max:100}}}))});
+}
+
+function switchTab(name){
+  document.querySelectorAll('.dashboard').forEach(d => d.classList.remove('active'));
+  document.getElementById('dashboard-' + name).classList.add('active');
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  const sidebarMap = { overview:0, appointments:1, services:2, financials:3, stylists:4 };
+  const sidebarItems = document.querySelectorAll('.sidebar-item');
+  if (sidebarMap[name] !== undefined) sidebarItems[sidebarMap[name]].classList.add('active');
+  const titles = { overview:'Overview', appointments:'Appointments', services:'Services', financials:'Financials', stylists:'Stylists' };
+  document.getElementById('topbar-title').textContent = titles[name];
+  const mobileTitle = document.getElementById('mobile-topbar-title');
+  if (mobileTitle) mobileTitle.textContent = titles[name];
+  document.querySelectorAll('.mobile-nav-item').forEach(b => b.classList.remove('active'));
+  const nav = document.querySelector('.mobile-nav-item[data-tab="'+name+'"]');
+  if (nav) nav.classList.add('active');
+  // Close drawer on tab change
+  const drawer = document.getElementById('mobile-drawer');
+  if (drawer && drawer.classList.contains('open')) toggleDrawer();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── Mobile drawer toggle ── */
+function toggleDrawer() {
+  document.getElementById('mobile-drawer').classList.toggle('open');
+  document.getElementById('mobile-drawer-backdrop').classList.toggle('open');
+}
+
+// Mobile filter bar mirrors desktop filters. Changes in either propagate to the other.
+function syncFiltersFromMobile(){
+  document.getElementById('year-filter').value  = document.getElementById('mobile-year-filter').value;
+  document.getElementById('month-filter').value = document.getElementById('mobile-month-filter').value;
+  renderAll();
+}
+function syncFiltersFromDesktop(){
+  const my = document.getElementById('mobile-year-filter');
+  const mm = document.getElementById('mobile-month-filter');
+  if (my) my.value = document.getElementById('year-filter').value;
+  if (mm) mm.value = document.getElementById('month-filter').value;
+  renderAll();
+}
+document.getElementById('year-filter').addEventListener('change', syncFiltersFromDesktop);
+document.getElementById('month-filter').addEventListener('change', syncFiltersFromDesktop);
+document.getElementById('mobile-year-filter').addEventListener('change', syncFiltersFromMobile);
+document.getElementById('mobile-month-filter').addEventListener('change', syncFiltersFromMobile);
+renderAll();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      color-scheme: dark;
+      --bg: #eae8de; --bg2: #f3f1e9; --surface: #ffffff; --surface2: #e4e1d5;
+      --border: #1a1a1a; --text: #1a1a1a; --muted: #55554e;
+      --gold: #ff4f00; --gold-bright: #c83e00; --gold-dim: rgba(255,79,0,.10);
+      --green: #187343; --red: #b3261e;
+      --font-head: 'Space Grotesk', sans-serif; --font-body: 'Inter', sans-serif;
+    }
+    body { background: var(--bg); color: var(--text); font-family: var(--font-body); font-size: 16px; line-height: 1.7; }
+
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 16px 0; background: rgba(234,232,222,.9); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,79,0,.08); }
+    nav .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--gold); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-logo-name { white-space: nowrap; font-size: 18px; font-weight: 700; color: var(--gold); }
+    .nav-logo-name span { color: var(--muted); font-weight: 400; font-size: 13px; }
+    .nav-logo-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .nav-logo-tagline { font-size: 9px; font-weight: 500; color: var(--gold); opacity: 0.6; letter-spacing: 0.5px; font-family: var(--font-body); }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-links a.active { color: var(--gold); }
+    .nav-cta { background: var(--gold) !important; color: #1a1a1a !important; padding: 8px 20px !important; border-radius: 6px; font-weight: 600 !important; font-size: 13px !important; }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown > a::after { content: ' \25BE'; font-size: 10px; }
+    .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: -12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 0; min-width: 180px; box-shadow: none; padding-top: 16px; z-index: 200; }
+    .nav-dropdown:hover .nav-dropdown-menu { display: block; }
+    .nav-dropdown-menu a { display: block !important; padding: 8px 18px !important; font-size: 13px !important; color: var(--muted) !important; }
+    .nav-dropdown-menu a:hover { background: rgba(255,79,0,.1) !important; color: var(--gold) !important; }
+    .menu-toggle { display: none; background: none; border: none; color: var(--muted); cursor: pointer; }
+
+    .container { max-width: 1140px; margin: 0 auto; padding: 0 24px; }
+    .page-header { padding: 120px 0 40px; text-align: center; }
+    .page-header h1 { font-family: var(--font-head); font-size: clamp(24px, 3.5vw, 36px); font-weight: 700; margin-bottom: 12px; }
+    .page-header p { color: var(--muted); font-size: 16px; max-width: 500px; margin: 0 auto; }
+
+    .form-section { padding: 0 0 80px; }
+    .form-card {
+      max-width: 600px; margin: 32px auto 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; padding: 40px; box-shadow: none;
+    }
+    .form-card h2 { font-family: var(--font-head); font-size: 16px; font-weight: 600; margin-bottom: 24px; color: var(--gold); }
+
+    .field { margin-bottom: 20px; }
+    .field label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .field label .req { color: var(--red); }
+    /* :not([type=checkbox]) matters. Without it a checkbox inherits
+       width:100% and the 12px/16px padding, which inside a flex label makes
+       the box swallow the whole row and squeezes its text into a one-word-wide
+       column. */
+    .field input:not([type=checkbox]), .field select, .field textarea {
+      width: 100%; padding: 12px 16px; border-radius: 8px;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--font-body); font-size: 14px;
+      outline: none; transition: border-color .2s;
+    }
+    .field input:not([type=checkbox]):focus, .field select:focus, .field textarea:focus { border-color: var(--gold); }
+    .field textarea { resize: vertical; min-height: 80px; }
+    .field .hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: end; }
+    /* Grid stretches the cell, not the control inside it — so a label that
+       wraps to two lines used to push its input lower than its neighbour's.
+       Making each field a column and pushing the control to the bottom keeps
+       the inputs on one line regardless of label length. */
+    .field-row > .field { display: flex; flex-direction: column; }
+    .field-row > .field > label { flex: 0 0 auto; }
+    .field-row > .field > input,
+    .field-row > .field > select { margin-top: auto; }
+
+    /* ── Checkbox list ──
+       auto-fit rather than a fixed 2 columns: at this text length two columns
+       fit comfortably on desktop and collapse to one on a phone without a
+       media query, and an odd final item simply sits on its own row. */
+    .check-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px 20px; margin-top: 10px; }
+    .field label.check, .check {
+      display: flex; align-items: center; gap: 11px;
+      font-weight: 400; font-size: 14px; color: var(--muted);
+      cursor: pointer; line-height: 1.45;
+      padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--bg); transition: border-color .2s, color .2s;
+    }
+    .field label.check:hover, .check:hover { border-color: rgba(255,79,0,.4); color: var(--text); }
+    .field label.check input[type=checkbox], .check input[type=checkbox] {
+      width: 18px; height: 18px; flex: 0 0 18px; margin: 0;
+      accent-color: var(--gold); cursor: pointer;
+    }
+    /* Checked state gets the gold border too, so a ticked row reads at a glance
+       rather than only from the small box. */
+    .field label.check:has(input:checked), .check:has(input:checked) { border-color: var(--gold); color: var(--text); background: var(--gold-dim); }
+    .field label.check span, .check span { flex: 1 1 auto; }
+
+    .section-divider { font-family: var(--font-head); font-size: 11px; color: var(--gold); text-transform: uppercase; letter-spacing: .1em; margin: 28px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 8px;
+      background: var(--gold); color: #1a1a1a;
+      font-family: var(--font-body); font-size: 15px; font-weight: 600;
+      border: none; cursor: pointer; transition: all .2s; width: 100%; justify-content: center;
+    }
+    .btn-primary:hover { background: var(--gold-bright); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+
+    .success-state { text-align: center; padding: 40px 20px; }
+    .success-state h2 { font-family: var(--font-head); font-size: 22px; margin-bottom: 12px; color: var(--green) !important; }
+    .success-state p { color: var(--muted); font-size: 15px; max-width: 400px; margin: 0 auto 8px; }
+
+    footer { padding: 60px 0 32px; background: var(--bg); border-top: 1px solid var(--border); }
+    .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
+    .footer-brand { font-family: var(--font-head); font-size: 18px; font-weight: 700; color: var(--gold); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+    footer p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+    .footer-heading { font-family: var(--font-head); font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 16px; }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 8px; }
+    .footer-links a { color: var(--muted); text-decoration: none; font-size: 14px; transition: color .2s; }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-bottom { padding-top: 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: var(--muted); }
+    .footer-social { display: flex; gap: 16px; }
+    .footer-social a { color: var(--muted); transition: color .2s; }
+    .footer-social a:hover { color: var(--gold); }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(234,232,222,.97); padding: 20px 24px; gap: 12px; border-bottom: 1px solid var(--border); }
+      .menu-toggle { display: block; }
+      .nav-cta { text-align: center !important; margin-top: 4px; }
+      .container { padding: 0 16px; }
+      .page-header { padding: 120px 0 32px; }
+      .page-header h1 { font-size: 24px; }
+      .page-header p { font-size: 14px; }
+      .footer-grid { grid-template-columns: 1fr 1fr !important; gap: 24px !important; }
+      .footer-grid > div:first-child { grid-column: span 2; text-align: center; margin-bottom: 8px; }
+      .footer-brand { justify-content: center; }
+      .footer-heading { font-size: 10px; }
+      .footer-links li { margin-bottom: 6px; }
+      .footer-links a { font-size: 13px; }
+      .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+      .footer-social { justify-content: center; }
+      .form-card { padding: 24px 16px; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  

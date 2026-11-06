@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/beehi-analytics-review/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/beehi-analytics-review/>
+<title>How to Track Business Expenses in Google Sheets | BeeHi Analytics</title>
+<meta content="Set up a Google Sheets business expense tracker with clear categories, a worked example and monthly SUMIFS formulas. Learn how to check totals and avoid duplicates." name="description"/beehi-analytics-review/>
+<meta content="Behind The Data Ltd." name="author"/beehi-analytics-review/>
+<meta content="index, follow, max-image-preview:large" name="robots"/beehi-analytics-review/>
+<link href="https://bianalytics.africa/blog/track-business-expenses-google-sheets" rel="canonical"/beehi-analytics-review/>
+<!-- Open Graph -->
+<meta content="article" property="og:type"/beehi-analytics-review/>
+<meta content="https://bianalytics.africa/blog/track-business-expenses-google-sheets" property="og:url"/beehi-analytics-review/>
+<meta content="How to Track Business Expenses in Google Sheets | BeeHi Analytics" property="og:title"/beehi-analytics-review/>
+<meta content="Set up a Google Sheets business expense tracker with clear categories, a worked example and monthly SUMIFS formulas. Learn how to check totals and avoid duplicates." property="og:description"/beehi-analytics-review/>
+<meta content="https://bianalytics.africa/assets/beehi-social-card.png" property="og:image"/beehi-analytics-review/>
+<meta content="en_NG" property="og:locale"/beehi-analytics-review/>
+<meta content="BeeHi Analytics" property="og:site_name"/beehi-analytics-review/>
+<!-- Twitter Card -->
+<meta content="summary_large_image" name="twitter:card"/beehi-analytics-review/>
+<meta content="https://bianalytics.africa/blog/track-business-expenses-google-sheets" name="twitter:url"/beehi-analytics-review/>
+<meta content="How to Track Business Expenses in Google Sheets | BeeHi Analytics" name="twitter:title"/beehi-analytics-review/>
+<meta content="Set up a Google Sheets business expense tracker with clear categories, a worked example and monthly SUMIFS formulas. Learn how to check totals and avoid duplicates." name="twitter:description"/beehi-analytics-review/>
+<meta content="https://bianalytics.africa/assets/beehi-social-card.png" name="twitter:image"/beehi-analytics-review/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/beehi-analytics-review/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/beehi-analytics-review/>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "@id": "https://bianalytics.africa/blog/track-business-expenses-google-sheets#article",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://bianalytics.africa/blog/track-business-expenses-google-sheets"
+      },
+      "url": "https://bianalytics.africa/blog/track-business-expenses-google-sheets",
+      "headline": "How to Track Business Expenses in Google Sheets",
+      "description": "Set up a Google Sheets business expense tracker with clear categories, a worked example and monthly SUMIFS formulas. Learn how to check totals and avoid duplicates.",
+      "image": "https://bianalytics.africa/assets/beehi-social-card.png",
+      "author": {
+        "@type": "Organization",
+        "name": "BeeHi Analytics",
+        "url": "https://bianalytics.africa/about"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "BeeHi Analytics",
+        "url": "https://bianalytics.africa/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://bianalytics.africa/logo/favicon.svg"
+        }
+      },
+      "datePublished": "2026-04-01",
+      "dateModified": "2026-09-25",
+      "inLanguage": "en-NG",
+      "articleSection": "Practical tutorials",
+      "wordCount": 940
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://bianalytics.africa/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Blog",
+          "item": "https://bianalytics.africa/blog"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "How to Track Business Expenses in Google Sheets",
+          "item": "https://bianalytics.africa/blog/track-business-expenses-google-sheets"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<link href="/beehi-analytics-review/assets/pages/blog-track-business-expenses-google-sheets.css" rel="stylesheet"/beehi-analytics-review/><link href="/beehi-analytics-review/assets/public-layout.css?v=0d65a1322067" rel="stylesheet"/beehi-analytics-review/>
+<script defer="" src="/beehi-analytics-review/assets/public-layout.js?v=20261027-current"></script>
+<link href="/beehi-analytics-review/assets/blog-articles.css?v=5a7a14f360a1" rel="stylesheet"/beehi-analytics-review/>
+<link href="/beehi-analytics-review/assets/beehi-theme.css?v=20261027-current" rel="stylesheet"/beehi-analytics-review/><link href="/beehi-analytics-review/assets/beehi-mark.svg" rel="icon" type="image/svg+xml"/beehi-analytics-review/><meta name="twitter:site" content="@BeeHiAnalytics"/beehi-analytics-review/><meta property="og:image:alt" content="BeeHi Analytics — Analytics-as-a-Service for SMEs"/beehi-analytics-review/><meta property="og:image:width" content="1200"/beehi-analytics-review/><meta property="og:image:height" content="630"/beehi-analytics-review/><meta name="robots" content="noindex, nofollow">
+</head>
+<body data-page="blog-track-business-expenses-google-sheets">
+<!-- shared:public-nav:start -->
+<nav aria-label="Main navigation" class="site-nav" id="nav">
+<div class="container">
+<a class="nav-logo" href="/beehi-analytics-review/">
+<svg aria-hidden="true" fill="none" height="38" viewbox="0 0 40 40" width="38" xmlns="http://www.w3.org/2000/svg"><rect fill="#ff4f00" height="37.5" rx="18.75" stroke="#1a1a1a" stroke-width="2.5" width="37.5" x="1.25" y="1.25"></rect><path d="M12 26V19M20 26V13M28 26V22" stroke="#1a1a1a" stroke-linecap="round" stroke-width="3"></path></svg>
+<div class="nav-logo-text"><span class="nav-logo-name">BeeHi<span>.</span>Analytics</span><div class="nav-logo-tagline">From Behind The Data</div></div>
+</a>
+<div class="nav-links" id="site-nav-links">
+<a href="/beehi-analytics-review/">Home</a>
+<a href="/beehi-analytics-review/about.html">About</a>
+<a href="/beehi-analytics-review/case-studies.html">Case Studies</a>
+<a href="/beehi-analytics-review/blog.html">Blog</a>
+<a href="/beehi-analytics-review/#pricing">Pricing</a>
+<details class="nav-dropdown">
+<summary>Refer</summary>
+<div class="nav-dropdown-menu">
+<a href="/beehi-analytics-review/partners.html">Partner Programme</a>
+<a href="https://bianalytics.africa/partner-portal">Partner Login</a>
+</div>
+</details>
+<button class="nav-signin" data-client-signin="" type="button">Sign In</button>
+<a class="nav-cta" href="/beehi-analytics-review/signup.html">Get Started</a>
+</div>
+<button aria-controls="site-nav-links" aria-expanded="false" aria-label="Toggle menu" class="menu-toggle" id="site-menu-toggle">
+<svg fill="none" height="24" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="24"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+</button>
+</div>
+</nav>
+<!-- shared:public-nav:end -->
+<header class="article-header">
+<div class="article-breadcrumbs"><a href="/beehi-analytics-review/">Home</a> / <a href="/beehi-analytics-review/blog.html">Blog</a> / Practical tutorials</div>
+<div class="article-tag">Practical tutorials · 5 min read</div>
+<h1>How to Track Business Expenses in Google Sheets</h1>
+<div class="article-meta">By <a href="/beehi-analytics-review/about.html">BeeHi Analytics</a><br/>Published <time datetime="2026-04-01">1 April 2026</time> · Updated <time datetime="2026-09-25">25 September 2026</time></div>
+</header>
+<article class="article-body">
+<p>To track business expenses in Google Sheets, create <strong>one Expenses tab with a row for each transaction</strong>, use consistent categories and build a separate monthly summary. Record amounts as numbers and dates as dates so the totals can be calculated reliably.</p><aside aria-labelledby="contents-title" class="article-toc"><h2 id="contents-title">In this guide</h2><ul><li><a href="#1-create-the-expenses-tab">1. Create the Expenses tab</a></li><li><a href="#2-choose-categories-your-business-can-maintain">2. Choose categories your business can maintain</a></li><li><a href="#3-enter-a-few-records-and-check-the-structure">3. Enter a few records and check the structure</a></li><li><a href="#4-calculate-the-monthly-total">4. Calculate the monthly total</a></li><li><a href="#5-calculate-spending-by-category-for-the-same-month">5. Calculate spending by category for the same month</a></li><li><a href="#6-reconcile-and-review-the-figures">6. Reconcile and review the figures</a></li><li><a href="#when-to-add-a-dashboard">When to add a dashboard</a></li><li><a href="#common-questions-about-expense-tracking">Common questions about expense tracking</a></li></ul></aside>
+<p>This guide shows a simple record of business cash outflows. It helps you see what you paid and where the money went. It is not, on its own, a calculation of accounting profit: stock purchases, equipment and loan repayments can require different treatment in your accounts.</p>
+<h2 id="1-create-the-expenses-tab">1. Create the Expenses tab</h2>
+<p>Create a spreadsheet and rename its first tab <strong>Expenses</strong>. Use these headers in row 1, in this exact order, so the formulas below match your columns:</p>
+<div aria-label="Expense tracker columns and example values" class="article-table-wrap" role="region" tabindex="0"><table><caption>Expense tracker columns and example values</caption><thead><tr><th>Column</th><th>Header</th><th>Example</th></tr></thead><tbody><tr><td>A</td><td>Date</td><td>2026-09-02</td></tr><tr><td>B</td><td>Description</td><td>Packaging bags</td></tr><tr><td>C</td><td>Category</td><td>Packaging</td></tr><tr><td>D</td><td>Amount</td><td>12000</td></tr><tr><td>E</td><td>Payment method</td><td>Transfer</td></tr><tr><td>F</td><td>Reference</td><td>EXP-001</td></tr><tr><td>G</td><td>Receipt or note</td><td>Receipt folder reference</td></tr></tbody></table></div>
+<p>Format column A as Date and column D as your chosen currency. Enter <code>12000</code>, not text such as “₦12,000 paid”. Use the same currency throughout this simple tracker; mixed currencies should not be added without a consistent conversion method.</p>
+<p>Freeze the header row and keep one continuous table. Do not insert subtotal rows between transactions, because later totals could count those amounts twice. Keep charts and summaries on another tab.</p>
+<h2 id="2-choose-categories-your-business-can-maintain">2. Choose categories your business can maintain</h2>
+<p>Start with a manageable list: Materials or Stock, Rent, Wages, Transport, Power, Internet, Marketing, Packaging, Equipment and Other. Adjust it to your business rather than creating a separate category for every supplier.</p>
+<p>Use a dropdown in column C to prevent “Transport”, “transport” and “Delivery transport” from becoming separate groups. Google’s <a href="https://support.google.com/docs/answer/186103">dropdown instructions</a> show how to create and edit the list. Keep category names stable once the sheet is in use.</p>
+<p>Keep transfers between your own accounts, money introduced by the owner and personal withdrawals separate from ordinary operating expenses. A change in bank balance is not always a business cost.</p>
+<h2 id="3-enter-a-few-records-and-check-the-structure">3. Enter a few records and check the structure</h2>
+<p>Use a copy of the sheet to try these illustrative September entries:</p>
+<ul><li>2 September: Packaging, ₦12,000.</li><li>3 September: Transport, ₦8,000.</li><li>5 September: Packaging, ₦6,000.</li><li>1 October: Packaging, ₦10,000.</li></ul>
+<p>September should total ₦26,000, with ₦18,000 for Packaging. The October entry should not appear in September’s summary. Delete the sample rows before entering your real records.</p>
+<p>Record expenses close to when they happen, keep supporting references and agree who enters which payments. If two people record the same transfer, a correct formula still gives an incorrect total.</p>
+<h2 id="4-calculate-the-monthly-total">4. Calculate the monthly total</h2>
+<p>Create a tab named <strong>Summary</strong>. Put a real month-start date, such as 1 September 2026, in B1. Put this formula in B3:</p>
+<pre><code>=SUMIFS(Expenses!D2:D1000,Expenses!A2:A1000,"&gt;="&amp;$B$1,Expenses!A2:A1000,"&lt;"&amp;EDATE($B$1,1))</code></pre>
+<p>This adds amounts from the month’s first day up to, but not including, the next month’s first day. The upper boundary also handles entries that include a time on the last day. Change B1 to review a different month.</p>
+<p>The examples cover rows 2–1000. Extend every matching range if you add more records. Some spreadsheet locales use semicolons rather than commas; keep dates as date values instead of typing date strings into the formula. See Google’s <a href="https://support.google.com/docs/answer/3238496">SUMIFS reference</a>.</p>
+<h2 id="5-calculate-spending-by-category-for-the-same-month">5. Calculate spending by category for the same month</h2>
+<p>On Summary, put Category in A5 and Total in B5. Enter Packaging in A6, Transport in A7 and your remaining categories below. Put this in B6 and copy down:</p>
+<pre><code>=SUMIFS(Expenses!D2:D1000,Expenses!C2:C1000,A6,Expenses!A2:A1000,"&gt;="&amp;$B$1,Expenses!A2:A1000,"&lt;"&amp;EDATE($B$1,1))</code></pre>
+<p>The date conditions matter. A category total without them would show all recorded months, which could be mistaken for this month’s spending. Check that the category totals add up to the monthly total; differences can reveal blank or unexpected categories.</p>
+<h2 id="6-reconcile-and-review-the-figures">6. Reconcile and review the figures</h2>
+<p>Compare recorded transfers with the bank statement and recorded cash payments with the cash record. Check duplicate references, missing receipts and dates stored as text. Investigate differences rather than adding an unexplained adjustment to force a match.</p>
+<p>Then ask what changed: did transport increase because there were more deliveries, or did the cost per delivery rise? Did you buy materials for future orders? A larger monthly outflow is not automatically waste.</p>
+<p>A category chart can make patterns easier to see. If you also compare spending with sales, use the same reporting period and clear definitions. Do not call the difference “net profit” unless the relevant costs and accounting adjustments are included.</p>
+<h2 id="when-to-add-a-dashboard">When to add a dashboard</h2>
+<p>Start with records you trust. If you regularly rebuild the same summaries, a dashboard can help display category totals and trends. It will not correct duplicate entries or missing amounts by itself. See <a href="/beehi-analytics-review/blog/signs-your-business-needs-dashboard.html">when a business dashboard is worth considering</a> and <a href="/beehi-analytics-review/blog/google-sheets-vs-excel.html">how Sheets compares with Excel</a>.</p>
+<h2 id="common-questions-about-expense-tracking">Common questions about expense tracking</h2>
+<h3>Should I make a new tab each month?</h3><p>For this setup, keep transactions in one Expenses tab and change the month in Summary. This makes comparisons easier and avoids maintaining twelve versions of a formula.</p>
+<h3>What if I do not have a receipt?</h3><p>Record what you know and flag the missing evidence. Keep the payment reference and follow up for the supporting document rather than inventing details.</p>
+<h3>Can I use this as my full accounting system?</h3><p>It is a basic payment tracker. Reporting profit, tax or other formal accounts can require additional records and professional accounting support.</p>
+</article>
+<div class="cta-banner"><h3>Turn your business data into better decisions</h3><p>BeeHi provides Analytics-as-a-Service for SMEs. Explore one way to access your insights, then tell us which business questions you need answered.</p><a href="/beehi-analytics-review/samples.html">Explore business examples →</a></div>
+<section class="related-posts">
+<h3>Related Posts</h3>
+<div class="related-grid">
+<a class="related-card" href="/beehi-analytics-review/blog/stop-losing-money-unpaid-invoices.html">
+<div class="tag">Finance</div>
+<h4>How to Track Unpaid Invoices and Follow Up on Payments</h4>
+</a>
+<a class="related-card" href="/beehi-analytics-review/blog/5-numbers-to-check-daily.html">
+<div class="tag">Guide</div>
+<h4>5 Numbers Every Small Business Owner Should Know</h4>
+</a>
+</div>
+</section>
+<!-- shared:public-footer:start -->
+<footer class="site-footer">
+<div class="container">
+<div class="footer-grid">
+<div>
+<div class="footer-brand">
+<svg aria-hidden="true" fill="none" height="38" viewbox="0 0 40 40" width="38" xmlns="http://www.w3.org/2000/svg"><rect fill="#ff4f00" height="37.5" rx="18.75" stroke="#1a1a1a" stroke-width="2.5" width="37.5" x="1.25" y="1.25"></rect><path d="M12 26V19M20 26V13M28 26V22" stroke="#1a1a1a" stroke-linecap="round" stroke-width="3"></path></svg>
+<div class="nav-logo-text"><span class="nav-logo-name">BeeHi<span>.</span>Analytics</span><div class="nav-logo-tagline">From Behind The Data</div></div>
+</div>
+<p>Analytics-as-a-Service for SMEs. Turn your business data into actionable insights, without building an internal analytics team.</p>
+<p style="font-size:12px;color:var(--muted);margin-top:8px;opacity:0.7">A product of Behind The Data Ltd.</p>
+</div>
+<div>
+<div class="footer-heading">Product</div>
+<ul class="footer-links">
+<li><a href="/beehi-analytics-review/#industries">Who It’s For</a></li>
+<li><a href="/beehi-analytics-review/#pricing">Pricing</a></li>
+<li><a href="/beehi-analytics-review/#preview">Demo</a></li>
+<li><a href="/beehi-analytics-review/#faq">FAQ</a></li>
+</ul>
+</div>
+<div>
+<div class="footer-heading">Industries</div>
+<ul class="footer-links">
+<li><a href="/beehi-analytics-review/samples/fitzone.html">Gyms &amp; Fitness</a></li>
+<li><a href="/beehi-analytics-review/samples/glowaura.html">Salons &amp; Beauty</a></li>
+<li><a href="/beehi-analytics-review/samples/freshpress.html">Laundry</a></li>
+<li><a href="/beehi-analytics-review/samples/mobilemechanics.html">Repairs</a></li>
+</ul>
+</div>
+<div>
+<div class="footer-heading">Company</div>
+<ul class="footer-links">
+<li><a href="/beehi-analytics-review/about.html">About Us</a></li>
+<li><a href="/beehi-analytics-review/case-studies.html">Case Studies</a></li>
+<li><a href="/beehi-analytics-review/blog.html">Blog</a></li>
+<li><a href="/beehi-analytics-review/partners.html">Partner Programme</a></li>
+</ul>
+</div>
+<div>
+<div class="footer-heading">Contact</div>
+<ul class="footer-links"><li><a href="/beehi-analytics-review/contact.html">Contact Us</a></li><li><a href="https://wa.me/2347064257792">WhatsApp</a></li><li><a href="mailto:hello@bianalytics.africa">Email us</a></li><li><a href="https://www.instagram.com/beehianalyticshq/">Instagram</a></li></ul>
+</div>
+</div>
+<div class="footer-bottom">
+<span>© 2026 BeeHi Analytics. All rights reserved.</span>
+<div class="footer-social"><a aria-label="X / Twitter" href="https://x.com/BeeHiAnalytics" title="X / Twitter">
+<svg fill="currentColor" height="18" viewbox="0 0 24 24" width="18"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</a><a aria-label="Instagram" href="https://www.instagram.com/beehianalyticshq/" rel="noopener noreferrer" target="_blank" title="Instagram">
+<svg fill="none" height="18" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" width="18"><rect height="20" rx="5" width="20" x="2" y="2"></rect><circle cx="12" cy="12" r="5"></circle><circle cx="17.5" cy="6.5" fill="currentColor" r="1.5" stroke="none"></circle></svg>
+</a><a aria-label="LinkedIn" href="https://www.linkedin.com/company/beehi-analytics-hq/about/" title="LinkedIn">
+<svg fill="currentColor" height="18" viewbox="0 0 24 24" width="18"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM6.886 20.452H3.79V9h3.096v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path></svg>
+</a><a aria-label="WhatsApp" href="https://wa.me/2347064257792" title="WhatsApp"><svg fill="none" height="20" stroke="currentColor" stroke-width="1.7" viewbox="0 0 24 24" width="20"><path d="M20.5 11.7a8.5 8.5 0 0 1-12.6 7.5L3 21l1.7-5a8.5 8.5 0 1 1 15.8-4.3Z"></path><path d="M8 7c-2 2 3 8 6 9l2-2-3-2-1 1-2-2 1-1-2-3Z"></path></svg></a><a aria-label="TikTok" href="#" title="TikTok"><svg fill="none" height="20" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="20"><path d="M14 3v12a4 4 0 1 1-4-4M14 3c1 4 3 5 6 5"></path></svg></a></div>
+</div>
+</div>
+</footer>
+<!-- shared:public-footer:end -->
+<!-- shared:client-signin:start -->
+<dialog aria-labelledby="client-signin-title" class="client-signin" id="client-signin">
+<button aria-label="Close sign in" class="client-signin-close" type="button">×</button>
+<h2 id="client-signin-title">Sign in to your dashboard</h2>
+<p>Enter your business’s dashboard name to go to its secure sign-in page.</p>
+<form id="client-signin-form">
+<label for="client-dashboard-name">Your dashboard name</label>
+<div class="client-signin-address"><input autocapitalize="none" autocomplete="off" id="client-dashboard-name" maxlength="63" name="subdomain" pattern="[a-zA-Z0-9]+(?:-[a-zA-Z0-9]+)*" placeholder="yourbusiness" required="" spellcheck="false"/beehi-analytics-review/><span>.bianalytics.africa</span></div>
+<p class="client-signin-hint">Use the name from your dashboard link, without https:// or .bianalytics.africa.</p>
+<button class="client-signin-submit" type="submit">Continue to sign in →</button>
+</form>
+<p class="client-signin-help">Forgot your dashboard name? <a href="https://wa.me/2347064257792">Ask us on WhatsApp</a></p>
+<p class="client-signin-help">Looking for partner access? <a href="https://bianalytics.africa/partner-portal">Partner Login</a></p>
+</dialog>
+<!-- shared:client-signin:end -->
+</body>
+</html>
