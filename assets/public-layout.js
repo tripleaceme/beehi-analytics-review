@@ -3,14 +3,19 @@
   const menu = document.getElementById('site-nav-links');
   const toggle = document.getElementById('site-menu-toggle');
   // Mark exact pages, or their parent menu for articles and customer stories.
+  const homeLink = document.querySelector('.site-nav .nav-logo');
+  const siteRoot = new URL('.', homeLink.href).pathname;
+  const routeOf = url => {
+    const relative = url.pathname.startsWith(siteRoot) ? url.pathname.slice(siteRoot.length) : url.pathname;
+    return '/' + relative.replace(/^\//, '').replace(/\.html$/, '').replace(/^index$/, '').replace(/\/$/, '');
+  };
   const updateCurrentMenu = () => {
-    const path = location.pathname.replace('/beehi-analytics-review', '').replace(/\.html$/, '').replace(/\/$/, '') || '/';
-    const homeLink = document.querySelector('.site-nav .nav-logo');
+    const path = routeOf(location);
     homeLink.removeAttribute('aria-current');
     if (path === '/' && !location.hash) homeLink.setAttribute('aria-current', 'page');
     menu.querySelectorAll('a').forEach(link => {
       const url = new URL(link.href, location.href);
-      const target = url.pathname.replace('/beehi-analytics-review', '').replace(/\.html$/, '').replace(/\/$/, '') || '/';
+      const target = routeOf(url);
       const exact = path === target;
       const child = target !== '/' && path.startsWith(target + '/');
       const active = url.origin === location.origin && (url.hash

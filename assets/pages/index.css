@@ -86,14 +86,14 @@
     .nav-cta {
       background: var(--gold) !important; color: #1a1a1a !important;
       padding: 8px 20px !important; border-radius: 6px;
-      font-weight: 600 !important; font-size: 13px !important;
+      font-weight: 600 !important;
       transition: background .2s, transform .15s !important;
     }
     .nav-signin {
       padding: 8px 18px !important;
       border: 1px solid var(--border) !important;
       border-radius: 6px;
-      font-size: 13px !important;
+
       font-weight: 500 !important;
       transition: border-color .2s, color .2s !important;
     }
@@ -1179,4 +1179,4 @@
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation: none !important; transition: none !important; }
     }
-  
+

@@ -13,7 +13,7 @@ h3,h4 { letter-spacing:-.01em; line-height:1.35; }
 .site-nav .nav-logo-name span,.site-footer .nav-logo-name span { color:#55554e; font-size:13px; font-weight:400; }
 .site-nav .nav-logo-tagline,.site-footer .nav-logo-tagline { color:#ff4f00; font-size:9px; opacity:.7; }
 .site-nav .nav-links { display:flex; align-items:center; gap:18px; }
-.site-nav .nav-links a,.site-nav summary,.site-nav .nav-signin { font:500 14px 'Inter',sans-serif; text-decoration:none; color:#4a4a46; white-space:nowrap; }
+.site-nav .nav-links a,.site-nav summary,.site-nav .nav-signin,.site-nav .nav-cta { font:500 17px 'Inter',sans-serif; text-decoration:none; color:#4a4a46; white-space:nowrap; }
 .site-nav .nav-links a:hover,.site-nav summary:hover { color:#c83e00; }
 .site-nav .nav-signin { border:1px solid #55554e; border-radius:7px; padding:10px 14px; background:transparent; cursor:pointer; }
 .site-nav .nav-cta { background:#ff4f00 !important; color: #1a1a1a !important; padding:10px 18px !important; border-radius:6px; font-weight:600 !important; }

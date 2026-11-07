@@ -22,7 +22,7 @@
     .nav-links a { color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 500; transition: color .2s; }
     .nav-links a:hover { color: var(--gold); }
     .nav-links a.active { color: var(--gold); }
-    .nav-cta { background: var(--gold) !important; color: #1a1a1a !important; padding: 8px 20px !important; border-radius: 6px; font-weight: 600 !important; font-size: 13px !important; }
+    .nav-cta { background: var(--gold) !important; color: #1a1a1a !important; padding: 8px 20px !important; border-radius: 6px; font-weight: 600 !important;  }
     .nav-dropdown { position: relative; }
     .nav-dropdown > a::after { content: ' \25BE'; font-size: 10px; }
     .nav-dropdown-menu { display: none; position: absolute; top: 100%; left: -12px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 8px 0; min-width: 180px; box-shadow: none; padding-top: 16px; z-index: 200; }
