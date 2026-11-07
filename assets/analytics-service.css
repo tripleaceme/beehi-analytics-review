@@ -4,3 +4,12 @@
 .aaas-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.aaas-grid article{border-top:2px solid var(--black);padding:24px 0}.aaas-number{font:700 14px var(--font-head);color:var(--orange)}.aaas-grid h3{font-size:22px;line-height:1.25;margin:18px 0 14px}.aaas-grid p{font-size:15px;line-height:1.7;color:var(--muted)}
 .app-roadmap{background:#fff;border-top:2px solid var(--black)}.platform-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}.platform-card{padding:26px 16px;border:2px solid var(--black);border-radius:20px;background:var(--beige);text-align:center}.platform-card svg{display:block;margin:0 auto 20px}.platform-card h3{font-size:20px;margin:0 0 16px}.platform-status{display:inline-block;border:1px solid #918d82;border-radius:99px;padding:5px 10px;font-size:11px;font-weight:600;color:#625e53}.app-roadmap-note{display:flex;gap:32px;padding-top:26px;margin-top:30px;border-top:1px solid #ccc8bc;font-size:14px;line-height:1.65}.app-roadmap-note strong{flex:0 0 230px}.app-roadmap-note p{margin:0;max-width:75ch;color:var(--muted)}
 @media(max-width:760px){.aaas-heading{grid-template-columns:1fr;gap:18px;margin-bottom:24px}.aaas-heading>p{font-size:16px}.aaas-grid{grid-template-columns:1fr;gap:0}.aaas-grid article{padding:20px 0}.aaas-grid h3{font-size:20px;margin-top:12px}.platform-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.platform-card{padding:22px 12px}.app-roadmap-note{display:block}.app-roadmap-note p{margin-top:10px}}
+
+/* A compact two-line title at both desktop and phone widths. */
+.app-roadmap .aaas-heading{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+.app-roadmap #app-title{font-size:clamp(26px,3.1vw,44px);line-height:1.15}.app-roadmap .app-title-line{white-space:nowrap}
+@media(max-width:760px){.app-roadmap .aaas-heading{grid-template-columns:1fr}.app-roadmap #app-title{font-size:clamp(20px,6vw,36px)}}
+/* Centred introductions above collections; editorial sections stay left-aligned. */
+#industries>.container>.section-label,#sources>.container>.eyebrow{margin-inline:auto;display:flex;justify-content:center}
+#industries>.container>h2,#industries>.container>p,#sources>.container>h2{text-align:center;margin-inline:auto}
+
