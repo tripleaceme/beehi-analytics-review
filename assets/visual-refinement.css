@@ -16,7 +16,7 @@ body[data-page="index"] .logo-tile{min-height:180px;padding:32px 24px}
 body[data-page="index"] #apps{padding-top:100px;padding-bottom:120px;background:#fff}
 body[data-page="index"] #apps .aaas-heading{margin-bottom:52px}
 body[data-page="index"] #faq{padding-top:100px;padding-bottom:110px}
-.industry-icon{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;background:#ff4f0010;color:#a83100;margin-bottom:18px}
+.industry-icon{display:flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;background:#ff4f0010;color:#a83100;margin-bottom:14px}
 .use-case-label{display:flex;gap:12px;align-items:center}.use-case-label .category-icon{width:25px;height:25px;flex:none}
 .mission .about-section-heading,.story .about-section-heading{max-width:none;text-align:left;margin-inline:0}
 .mission .about-section-heading h2,.story .about-section-heading h2{text-align:left;max-width:920px}

@@ -22,7 +22,7 @@
 /* Let each preview fit its contents instead of clipping figures into a fixed frame. */
 .preview-main-wrap{min-height:0}.preview-screen{position:relative;inset:auto;display:none;transition:none}.preview-screen.active{display:flex;opacity:1}#ps-2{overflow:visible}
 /* Reserve identical rows on every carousel page, including the final three. */
-.industry-slide{grid-auto-rows:148px;align-content:start}.industry-slide .industry-card{height:148px;min-height:0}
+.industry-slide{grid-auto-rows:minmax(220px,auto);align-content:start}.industry-slide .industry-card{height:auto;min-height:220px}
 /* Fit the entire desktop hero at normal zoom, while allowing natural mobile scrolling. */
 @media(min-width:1001px){
  .beehi-hero{min-height:100svh;padding:100px 0 24px;display:flex;align-items:center}
@@ -42,7 +42,7 @@
  .phone-stage{height:470px}.phone-shell{transform:translate(-50%,-50%) rotate(3deg) scale(.70)}
  .beehi-hero h1{font-size:44px;margin-bottom:16px}.beehi-hero .hero-sub{font-size:16px;margin-bottom:16px}.hero-note{margin-bottom:14px}.hero-details p{line-height:1.5}
 }
-@media(max-width:1000px){.industry-slide{grid-auto-rows:155px}.industry-slide .industry-card{height:155px}}
+@media(max-width:1000px){.industry-slide{grid-auto-rows:minmax(220px,auto)}}
 
 
 
@@ -80,8 +80,8 @@
 
 /* Compact industry rows retain readable descriptions and generous tap targets. */
 @media(max-width:760px){
- .industry-slide{grid-auto-rows:104px;gap:10px;margin-top:24px}
- .industry-slide .industry-card{height:104px;padding:16px 18px;border-radius:16px}
+ .industry-slide{grid-auto-rows:minmax(104px,auto);gap:10px;margin-top:24px}
+ .industry-slide .industry-card{height:auto;min-height:104px;padding:16px 18px;border-radius:16px}
  .industry-slide .industry-card h3{font-size:16px;line-height:1.25;margin-bottom:7px}
  .industry-slide .industry-join{font-size:12px;line-height:1.4;margin:0;gap:8px}
  .industry-controls{margin-top:18px}
