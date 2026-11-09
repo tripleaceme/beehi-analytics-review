@@ -27,7 +27,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="assets/pages/signup.css" rel="stylesheet"/><link href="assets/public-layout.css?v=0d65a1322067" rel="stylesheet"/>
 <script defer="" src="assets/public-layout.js?v=20261027-current"></script>
-<link href="assets/beehi-theme.css?v=20261027-current" rel="stylesheet"/><link href="assets/beehi-mark.svg" rel="icon" type="image/svg+xml"/><meta name="twitter:site" content="@BeeHiAnalytics"/><meta property="og:image:alt" content="BeeHi Analytics — Analytics-as-a-Service for SMEs"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta name="robots" content="noindex, nofollow">
+<link href="assets/beehi-theme.css?v=20261027-current" rel="stylesheet"/><link href="assets/beehi-mark.svg" rel="icon" type="image/svg+xml"/><meta name="twitter:site" content="@BeeHiAnalytics"/><meta property="og:image:alt" content="BeeHi Analytics — Analytics-as-a-Service for SMEs"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><style>.form-step{scroll-margin-top:100px}</style><meta name="robots" content="noindex, nofollow">
 </head>
 <body data-page="signup">
 <!-- shared:public-nav:start -->
@@ -42,7 +42,7 @@
 <a href="about.html">About</a>
 <a href="case-studies.html">Case Studies</a>
 <a href="blog.html">Blog</a>
-<a href="index.html#pricing">Pricing</a>
+<a href="pricing.html">Pricing</a>
 <details class="nav-dropdown">
 <summary>Refer</summary>
 <div class="nav-dropdown-menu">
@@ -178,21 +178,21 @@
 </div>
 <!-- ══ Step 2: Plan Selection ══ -->
 <div class="form-step" id="step-2">
-<h2>Choose your plan</h2>
+<h2>Choose your plan</h2><p><a href="pricing.html" target="_blank" rel="noopener">Compare plan scope and support →</a></p>
 <div class="plan-options">
-<label class="plan-option" onclick="selectPlan(this, 'starter', 7500, 2)">
+<label class="plan-option" onclick="selectPlan(this, 'starter', 7500, 5)">
 <input name="plan" type="radio" value="starter"/>
 <div class="plan-name">Starter</div>
 <div class="plan-price">₦7,500</div>
 <div class="plan-detail">/month · min. 6 months</div>
 </label>
-<label class="plan-option selected" onclick="selectPlan(this, 'growth', 15000, 5)">
+<label class="plan-option selected" onclick="selectPlan(this, 'growth', 15000, 8)">
 <input checked="" name="plan" type="radio" value="growth"/>
 <div class="plan-name">Growth</div>
 <div class="plan-price">₦15,000</div>
 <div class="plan-detail">/month · min. 3 months</div>
 </label>
-<label class="plan-option" onclick="selectPlan(this, 'business', 35000, 10)">
+<label class="plan-option" onclick="selectPlan(this, 'business', 35000, null)">
 <input name="plan" type="radio" value="business"/>
 <div class="plan-name">Business</div>
 <div class="plan-price">₦35,000</div>
@@ -222,7 +222,7 @@
 </div>
 <div class="payment-row">
 <span class="label">Period</span>
-<span class="value" id="summary-period">Monthly</span>
+<span class="value" id="summary-period">3 Months (minimum)</span>
 </div>
 <div class="payment-row">
 <span class="label">Subscription</span>
@@ -252,19 +252,19 @@
 <h3>Bank Transfer Details</h3>
 <div class="bank-row">
 <span class="label">Bank</span>
-<span class="value">Providus Bank <button class="copy-btn" onclick="copyText('Providus Bank')">Copy</button></span>
+<span class="value">Providus Bank <button class="copy-btn" onclick="copyText('Providus Bank', this)">Copy</button></span>
 </div>
 <div class="bank-row">
 <span class="label">Account Number</span>
-<span class="value">1308690832 <button class="copy-btn" onclick="copyText('1308690832')">Copy</button></span>
+<span class="value">1308690832 <button class="copy-btn" onclick="copyText('1308690832', this)">Copy</button></span>
 </div>
 <div class="bank-row">
 <span class="label">Account Name</span>
-<span class="value">BEHIND THE DATA LTD <button class="copy-btn" onclick="copyText('BEHIND THE DATA LTD')">Copy</button></span>
+<span class="value">BEHIND THE DATA LTD <button class="copy-btn" onclick="copyText('BEHIND THE DATA LTD', this)">Copy</button></span>
 </div>
 <div class="bank-row" style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(16,185,129,.15)">
 <span class="label">Amount to pay</span>
-<span class="value" id="pay-amount" style="color:var(--green);font-size:18px">₦50,000</span>
+<span class="value" id="pay-amount" style="color:var(--green);font-size:18px">₦70,000</span>
 </div>
 </div>
 <div class="field">
@@ -301,7 +301,7 @@
 <div style="text-align:left;max-width:480px;margin:16px auto 0">
 <div style="display:flex;gap:12px;padding:8px 0;font-size:14px;color:var(--muted);align-items:flex-start">
 <span style="color:var(--gold);font-family:var(--font-head);font-weight:700;flex-shrink:0">1.</span>
-<span style="flex:1;min-width:0">We verify your payment (within 2 hours)</span>
+<span style="flex:1;min-width:0">We verify your payment and confirm the next steps</span>
 </div>
 <div style="display:flex;gap:12px;padding:8px 0;font-size:14px;color:var(--muted);align-items:flex-start">
 <span style="color:var(--gold);font-family:var(--font-head);font-weight:700;flex-shrink:0">2.</span>
@@ -340,9 +340,9 @@
 <div>
 <div class="footer-heading">Product</div>
 <ul class="footer-links">
-<li><a href="index.html#industries">Who It’s For</a></li>
-<li><a href="index.html#pricing">Pricing</a></li>
-<li><a href="index.html#preview">Demo</a></li>
+<li><a href="industries.html">Who It’s For</a></li>
+<li><a href="pricing.html">Pricing</a></li>
+<li><a href="how-it-works.html">How It Works</a></li>
 <li><a href="index.html#faq">FAQ</a></li>
 </ul>
 </div>
@@ -385,7 +385,7 @@
 <script>
 /* ── State ── */
 let currentStep = 1;
-let selectedPlan = { name: 'Growth', key: 'growth', price: 15000, views: 5 };
+let selectedPlan = { name: 'Growth', key: 'growth', price: 15000, views: 8 };
 // Setup fee varies per plan — must mirror the values shown in index.html
 // pricing cards. Update both files together if pricing changes.
 const SETUP_FEES = { starter: 10000, growth: 25000, business: 50000 };
@@ -408,7 +408,7 @@ function goToStep(n) {
   });
 
   currentStep = n;
-  window.scrollTo({ top: 200, behavior: 'smooth' });
+  document.getElementById('step-' + n).scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function validateStep1() {
@@ -433,7 +433,7 @@ function validateStep1() {
     noticeFn('Please fill in all required fields before continuing.');
     return false;
   }
-  if (!email.includes('@')) {
+  if (!document.getElementById('f-email').checkValidity()) {
     noticeFn('Please enter a valid email address.');
     return false;
   }
@@ -474,6 +474,7 @@ const minPeriodHints = {
 function selectPlan(el, key, price, views) {
   document.querySelectorAll('.plan-option').forEach(p => p.classList.remove('selected'));
   el.classList.add('selected');
+  el.querySelector('input').checked = true;
   const names = { starter: 'Starter', growth: 'Growth', business: 'Business' };
   selectedPlan = { name: names[key], key, price, views };
   populateBillingOptions();
@@ -512,13 +513,13 @@ function updatePaymentSummary() {
 }
 
 /* ── Copy to clipboard ── */
-function copyText(text) {
+function copyText(text, button) {
   navigator.clipboard.writeText(text).then(() => {
     const btns = document.querySelectorAll('.copy-btn');
     btns.forEach(b => { if (b.textContent === 'Copied!') b.textContent = 'Copy'; });
-    event.target.textContent = 'Copied!';
-    setTimeout(() => { event.target.textContent = 'Copy'; }, 2000);
-  });
+    button.textContent = 'Copied!';
+    setTimeout(() => { button.textContent = 'Copy'; }, 2000);
+  }).catch(() => { button.textContent = 'Select and copy'; });
 }
 
 /* ── Inline notice helpers (in-page, never a window.alert).
@@ -644,7 +645,7 @@ async function submitForm() { alert("Review website only. Applications and payme
     document.getElementById('success-url').textContent = subdomain + '.bianalytics.africa';
     goToStep(4);
   } else {
-    showNotice(data.error || 'Something went wrong. Please try again.', res.status === 429 ? 'warn' : 'error');
+    showNotice(String(data.error || 'Something went wrong. Please try again.').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])), res.status === 429 ? 'warn' : 'error');
     resetBtn();
   }
 }
@@ -660,7 +661,7 @@ if (Array.from(industrySelect.options).some(option => option.value === requested
   industrySelect.value = requestedIndustry;
 }
 const requestedPlan = signupParams.get('plan');
-const planOptions = { starter: [0, 7500, 2], growth: [1, 15000, 5], business: [2, 35000, 10] };
+const planOptions = { starter: [0, 7500, 5], growth: [1, 15000, 8], business: [2, 35000, null] };
 if (Object.prototype.hasOwnProperty.call(planOptions, requestedPlan)) {
   const [index, price, views] = planOptions[requestedPlan];
   selectPlan(document.querySelectorAll('.plan-option')[index], requestedPlan, price, views);

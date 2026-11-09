@@ -1,0 +1,113 @@
+    .pricing {
+      padding: 100px 0;
+      background: var(--bg2);
+    }
+    .pricing h2 {
+      font-family: var(--font-head);
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 700; text-align: center;
+      margin-bottom: 16px;
+    }
+    .pricing > .container > p {
+      text-align: center; color: var(--muted);
+      max-width: 460px; margin: 0 auto 32px;
+    }
+
+    /* Billing toggle */
+    .billing-toggle {
+      display: flex; align-items: center; justify-content: center;
+      gap: 12px; margin-bottom: 48px;
+    }
+    .billing-label { font-size: 14px; color: var(--muted); font-weight: 500; }
+    .billing-label.active { color: var(--text); }
+    .toggle-track {
+      width: 48px; height: 26px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      position: relative;
+      cursor: pointer;
+      transition: background .3s;
+    }
+    .toggle-track.on { background: var(--gold-dim); border-color: var(--gold); }
+    .toggle-knob {
+      width: 20px; height: 20px;
+      background: var(--muted);
+      border-radius: 50%;
+      position: absolute;
+      top: 2px; left: 2px;
+      transition: transform .3s, background .3s;
+    }
+    .toggle-track.on .toggle-knob { transform: translateX(22px); background: var(--gold); }
+    .save-badge {
+      background: rgba(16,185,129,.12);
+      color: var(--green);
+      font-size: 11px; font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 100px;
+      border: 1px solid rgba(16,185,129,.2);
+    }
+
+    .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .pricing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 36px 28px;
+      position: relative;
+      transition: border-color .3s, transform .3s;
+    }
+    .pricing-card:hover { transform: translateY(-4px); }
+    .pricing-card.featured {
+      border-color: var(--gold);
+      box-shadow: none;
+    }
+    .pricing-card.featured::before {
+      content: 'Most Popular';
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--gold); color: #1a1a1a;
+      font-size: 11px; font-weight: 700;
+      padding: 4px 16px; border-radius: 100px;
+      font-family: var(--font-head);
+    }
+    .pricing-tier {
+      font-family: var(--font-head);
+      font-size: 13px; font-weight: 600;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 8px;
+    }
+    .pricing-amount {
+      font-family: var(--font-head);
+      font-size: 36px; font-weight: 700;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .pricing-period { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+    .pricing-desc {
+      color: var(--muted); font-size: 14px;
+      padding-bottom: 20px; margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .pricing-features { list-style: none; margin-bottom: 28px; }
+    .pricing-features li {
+      padding: 6px 0;
+      font-size: 14px; color: var(--muted);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .pricing-features li::before {
+      content: '';
+      width: 16px; height: 16px; flex-shrink: 0;
+      background: rgba(16,185,129,.12);
+      border-radius: 50%;
+      background-image: url("data:image/svg+xml,%3Csvg width='10' height='10' viewBox='0 0 10 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 5l2 2 4-4' stroke='%2310b981' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .pricing-card .btn { width: 100%; justify-content: center; }
+.pricing-features{padding-left:0}.billing-toggle{margin-bottom:40px}.setup-fee-note{font-size:14px;margin-bottom:20px}.upfront-total{display:inline-block;margin-top:8px}.min-period{display:block;color:#a83100;margin-top:8px}.pricing-card{position:relative}.pricing-desc{margin-bottom:20px}.pricing-grid{align-items:stretch}.pricing-card.featured{background:#ffd7c5}.pricing-card.featured::before{background:#1a1a1a;color:#fff}.pricing-card .pricing-amount{color:#1a1a1a}.pricing-tier{color:#a83100}.pricing-features li{color:#1a1a1a}.pricing-amount{font-size:42px}
+@media(max-width:900px){.pricing-grid{grid-template-columns:1fr;max-width:540px;margin-inline:auto}.pricing-card{padding:30px 24px}.pricing-card.featured{margin-top:14px}}
+/* Keep the approved BeeHi card treatment on the comparison page. */
+.pricing-card,.pricing-card.featured{border:2px solid var(--black);border-radius:24px;box-shadow:none}.pricing-card.featured::before{border-radius:999px}.pricing-features li::before{color:var(--green)}
