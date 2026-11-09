@@ -22,7 +22,7 @@
 /* Let each preview fit its contents instead of clipping figures into a fixed frame. */
 .preview-main-wrap{min-height:0}.preview-screen{position:relative;inset:auto;display:none;transition:none}.preview-screen.active{display:flex;opacity:1}#ps-2{overflow:visible}
 /* Reserve identical rows on every carousel page, including the final three. */
-.industry-slide{grid-auto-rows:minmax(220px,auto);align-content:start}.industry-slide .industry-card{height:auto;min-height:220px}
+.industry-slide{grid-auto-rows:minmax(148px,auto);align-content:start}.industry-slide .industry-card{height:auto;min-height:148px}
 /* Fit the entire desktop hero at normal zoom, while allowing natural mobile scrolling. */
 @media(min-width:1001px){
  .beehi-hero{min-height:100svh;padding:100px 0 24px;display:flex;align-items:center}
@@ -42,7 +42,7 @@
  .phone-stage{height:470px}.phone-shell{transform:translate(-50%,-50%) rotate(3deg) scale(.70)}
  .beehi-hero h1{font-size:44px;margin-bottom:16px}.beehi-hero .hero-sub{font-size:16px;margin-bottom:16px}.hero-note{margin-bottom:14px}.hero-details p{line-height:1.5}
 }
-@media(max-width:1000px){.industry-slide{grid-auto-rows:minmax(220px,auto)}}
+@media(max-width:1000px){.industry-slide{grid-auto-rows:minmax(148px,auto)}}
 
 
 
