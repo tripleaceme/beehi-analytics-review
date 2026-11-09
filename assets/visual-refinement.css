@@ -43,21 +43,8 @@ body[data-page="pricing"] .plan-comparison thead{background:#eae8de;color:var(--
 .pricing-help{background:#fff;padding:45px 0 100px}.pricing-help>.container{background:var(--beige);border-radius:28px;padding:44px;display:flex;align-items:center;justify-content:space-between;gap:40px;max-width:1232px}.pricing-help h2{font-size:32px;margin:0 0 16px}.pricing-help p{max-width:610px;margin:0;color:var(--muted)}.pricing-help .btn{flex-shrink:0}
 /* Editorial images and reading layout. */
 .blog-thumb{padding:0!important;height:auto!important;aspect-ratio:16/9;overflow:hidden;border:0!important;background:#eee!important}.blog-thumb img{display:block;width:100%;height:100%;object-fit:cover}
-body[data-page^="blog-"]{background:#fff}
-.article-header{max-width:1040px!important;margin-inline:auto;padding-top:140px;padding-bottom:34px!important;text-align:left}
-.article-header h1{max-width:880px;font-size:clamp(34px,4.4vw,56px);line-height:1.12;letter-spacing:-.04em;margin:20px 0 25px;text-wrap:balance}
-.article-header .article-meta{font-size:13px;line-height:1.8;color:var(--muted)}
-.article-cover{display:block;width:calc(100% - 48px);max-width:992px;margin:0 auto 56px;border-radius:24px;overflow:hidden;background:var(--beige)}.article-cover img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
-.article-body{max-width:780px;margin-inline:auto;padding-top:0!important;font-size:18px;line-height:1.85}
-.article-body h2{font-size:30px;margin-top:48px;margin-bottom:18px}.article-body h3{font-size:22px;margin-top:32px}.article-body p{margin-bottom:22px}
-.article-body .guide-next{border:0;background:#f4f2ea;border-radius:18px;padding:28px 30px;margin:32px 0}.article-body>.guide-next:first-child{margin-top:0}
-.article-toc{border:0;background:#f8f7f2;padding:26px 30px;border-radius:18px}.article-toc h2{font-size:18px;margin-top:0}
-.related-posts{max-width:1040px!important;margin:70px auto 0!important;padding:56px 24px 90px!important;border:0!important;background:#fff!important}
-.related-posts>h3{font-size:28px;margin-bottom:28px}.related-grid{gap:28px!important}.related-card{padding:0!important;overflow:hidden;border:1px solid #1a1a1a20!important;border-radius:18px;background:#fff!important}.related-card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.related-card .tag{margin:20px 24px 10px}.related-card h4{padding:0 24px 26px;font-size:21px;line-height:1.35}
 @media(max-width:760px){
  body[data-page="index"] #customer-stories{padding-block:72px 80px}body[data-page="index"] #apps{padding-block:72px 80px}body[data-page="index"] #pricing{padding-bottom:80px!important}body[data-page="index"] .logo-grid{gap:16px;margin-top:32px}body[data-page="index"] .logo-tile{min-height:145px;padding:22px 18px}
  .industry-card{position:relative;padding-left:68px!important}.industry-icon{position:absolute;left:16px;top:20px;width:36px;height:36px;margin:0}.industry-icon svg{width:23px;height:23px}
  body[data-page="pricing"] .service-hero{padding:122px 0 28px}body[data-page="pricing"] .service-hero h1{font-size:38px}.pricing-questions>.container{grid-template-columns:1fr;gap:20px}.pricing-questions{padding-block:55px}.pricing-help{padding:24px 20px 70px}.pricing-help>.container{display:block;padding:30px 24px}.pricing-help .btn{margin-top:24px}.pricing-help h2{font-size:28px}.pricing-next{padding:26px 20px;margin-top:36px}body[data-page="pricing"] .service-section{padding-block:55px}
- .article-header{padding-top:120px!important}.article-cover{width:calc(100% - 40px);margin-bottom:36px;border-radius:16px}.article-body{font-size:16px}.article-body h2{font-size:26px}.article-body .guide-next{padding:24px}.related-posts{margin-top:36px!important;padding-top:30px!important}.related-grid{grid-template-columns:1fr!important}.article-header h1{font-size:36px}
 }
-.article-header{background:transparent;border:0}
