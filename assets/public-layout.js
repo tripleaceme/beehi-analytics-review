@@ -42,6 +42,10 @@
   document.querySelectorAll('[data-client-signin]').forEach(button => {
     button.addEventListener('click', () => {
       closeMenu();
+      if (document.body.dataset.loginPreview) {
+        window.location.assign(document.body.dataset.loginPreview);
+        return;
+      }
       dialog.showModal();
       document.getElementById('client-dashboard-name').focus();
     });
