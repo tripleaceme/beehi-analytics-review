@@ -7,7 +7,7 @@
   toggle.addEventListener('click', () => {
     const visible = input.type === 'password';
     input.type = visible ? 'text' : 'password';
-    toggle.textContent = visible ? 'Hide' : 'Show';
+    toggle.classList.toggle('is-visible', visible);
     toggle.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
     toggle.setAttribute('aria-pressed', String(visible));
   });

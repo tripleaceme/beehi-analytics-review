@@ -42,10 +42,6 @@
   document.querySelectorAll('[data-client-signin]').forEach(button => {
     button.addEventListener('click', () => {
       closeMenu();
-      if (document.body.dataset.loginPreview) {
-        window.location.assign(document.body.dataset.loginPreview);
-        return;
-      }
       dialog.showModal();
       document.getElementById('client-dashboard-name').focus();
     });
@@ -67,6 +63,13 @@
       input.setCustomValidity('Enter only your dashboard name, using letters, numbers and single hyphens.');
       input.reportValidity();
       return;
+    }
+    if (document.body.dataset.loginPreview) {
+      if (name !== 'feedzone') {
+        input.setCustomValidity('For this design preview, use feedzone. Other businesses are checked on the live service.');
+        input.reportValidity(); return;
+      }
+      window.location.assign(document.body.dataset.loginPreview); return;
     }
     window.location.assign(`https://${name}.bianalytics.africa/backend/login.php`);
   });
